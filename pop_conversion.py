@@ -110,7 +110,8 @@ def _pop_grammar():
     cmd_label = POPCommand('LABEL_DATA') + OneOrMore(Word(alphanums))
     cmd_experiment_phase = POPCommand('EXPERIMENT') + OneOrMore(
         Group((property | const) + sERROR) + Optional(sCOMMA))
-    cmd_start_value = POPCommand('SET_START_VALUE') + property
+    cmd_start_value = POPCommand('SET_START_VALUE') + OneOrMore(
+        (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_save = POPCommand('SAVE_WORKSPACE')
     return (
                cmd_equilibrium | cmd_change_status | cmd_en_symbol | cmd_table_head | cmd_table_values |

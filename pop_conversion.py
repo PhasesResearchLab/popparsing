@@ -114,7 +114,7 @@ def _pop_grammar():
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_set_alt_condition = POPCommand('SET_ALTERNATE_CONDITION') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
-    cmd_save = POPCommand('SAVE_WORKSPACE')
+    cmd_save = POPCommand('SAVE_WORKSPACES')
     return (
                cmd_equilibrium | cmd_change_status | cmd_en_symbol | cmd_table_head | cmd_table_values |
                cmd_set_ref_state | cmd_set_condition | cmd_label |
@@ -295,7 +295,7 @@ _POP_PROCESSOR = {
     'FLUSH_BUFFER': _pass,  # 41
     'IMPORT': _pass,  # 27
     'LABEL_DATA': lambda exp, label: exp.update({"label": label}),  # implementing # 28
-    'SAVE_WORKSPACE': _pass,  # 232
+    'SAVE_WORKSPACES': _pass,  # 232
     'SET_ALL_START_VALUES': _pass,  # 162
     'SET_ALTERNATE_CONDITION': _pass,  # 30
     'SET_CONDITION': _unimplemented,  # implementing # 165

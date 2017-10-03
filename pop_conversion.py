@@ -112,11 +112,13 @@ def _pop_grammar():
         Group((property | const) + sERROR) + Optional(sCOMMA))
     cmd_start_value = POPCommand('SET_START_VALUE') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
+    cmd_set_alt_condition = POPCommand('SET_ALTERNATE_CONDITION') + OneOrMore(
+        (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_save = POPCommand('SAVE_WORKSPACE')
     return (
                cmd_equilibrium | cmd_change_status | cmd_en_symbol | cmd_table_head | cmd_table_values |
                cmd_set_ref_state | cmd_set_condition | cmd_label |
-               cmd_experiment_phase | cmd_start_value | cmd_save) + Optional(
+               cmd_experiment_phase | cmd_start_value | cmd_save | cmd_set_alt_condition) + Optional(
         Suppress(';')) + stringEnd
 
 

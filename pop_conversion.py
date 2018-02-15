@@ -5,6 +5,7 @@ This module handles conversion of POP files to JSON files in ESPEI format
 from sympy.parsing.sympy_parser import parse_expr
 from pyparsing import *
 from pop_keywords import expand_keyword, POP_COMMANDS
+from pop_class import Equilibrium
 
 print("""WARNING! This module is VERY experimental. You will most likely get failures or incorrect answers.
 You should check all of your data instead of assuming it is correct.
@@ -276,8 +277,35 @@ def _process_experiment(exp, experiments):
             # assume prop (=/>/<) symbol
             d["equality"] = experiment[1]
             d["symbol_repr"] = construct_symbol(experiment[2:])
+        exp_experiments.append(d)
     exp["experiments"] = exp_experiments
     return exp
+
+def _set_condition(exp, *conditions):
+    '''
+	Set the condition for each experiment set
+	Args: 
+		exp(Experiment Set): the current experiment set
+		*conditions: all conditions to be set
+	'''
+    condition_dict={}
+    for condition in conditions:
+        if isinstance(condition, ParseResults):
+            temp = unpack_parse_results(condition)
+        params=[]
+        condition_values={}
+        for i in range(len(temp)):
+            if type(temp[i])==list:
+                params+=temp[i]
+        key=temp[0]
+        equal_sign=temp.index('=')
+        print(type(temp))
+        condition_values['fields']=params
+        condition_values['value']=temp[equal_sign+1]
+        condition_dict[key]=condition_values
+    exp['conditions']=condition_dict
+    return exp
+	
 
 _POP_PROCESSOR = {
     'TABLE_HEAD': _pass,
@@ -298,7 +326,7 @@ _POP_PROCESSOR = {
     'SAVE_WORKSPACES': _pass,  # 232
     'SET_ALL_START_VALUES': _pass,  # 162
     'SET_ALTERNATE_CONDITION': _pass,  # 30
-    'SET_CONDITION': _unimplemented,  # implementing # 165
+    'SET_CONDITION': _set_condition,  # implementing # 165
     'SET_NUMERICAL_LIMITS': _pass,  # 237
     'SET_REFERENCE_STATE': _unimplemented,  # implementing # 169
     'SET_START_VALUE': _unimplemented,  # 171
@@ -338,7 +366,7 @@ def parsable(instring):
     splitlines = new_splitlines
     return splitlines
 
-
+lst=[]
 def main(instring):
     # create an empty
     global_symbols = {}
@@ -365,8 +393,9 @@ def main(instring):
             pass
             # raise NotImplementedError("Command {} is not implemented for tokens {}".format(str(tokens[0]), str(tokens[1:])))
         print(tokens)
-        print(command)
-    print(data)
+        #print(command)
+    for d in data:
+        lst.append(Equilibrium(d))
 
 
 try:

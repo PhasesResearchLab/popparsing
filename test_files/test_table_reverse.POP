@@ -1,0 +1,25 @@
+﻿TABLE_HEAD 40
+CREATE_NEW_EQUILIBRIUM @@,1
+CHANGE_STATUS PHASE *=SUS
+CHANGE_STATUS PHASE LIQUID=FIX 1
+CHANGE_STATUS PHASE BCC=FIX 0
+SET_CONDITION P=102325
+SET_CONDITION T=@2
+EXPERIMENT X(LIQUID,Ti)=@1:0.01
+LABEL AREV
+SET_START_VALUE X(LIQUID,Ti)=@1
+TABLE_VALUES
+$ X(Ti)         T
+0.00          1406
+0.0045        1420
+0.01          1445
+0.02          1446
+0.03          1495
+0.04          1563
+0.05          1643
+0.10          1957
+0.15          2093
+0.20          2117
+0.30          2198
+TABLE_END
+$----------------------------------------------------------

@@ -1,0 +1,15 @@
+﻿$----------------------------------------------------------
+$       EUTECTOID         BCC(Ti,U) - (Ti)rt + TiU2
+$ T=928             X(Ti)=.85
+$=========================================================
+CREATE_NEW_EQUILIBRIUM 1,1
+CHANGE_STATUS PHASE BCC,HCP,DEL=FIX 1
+SET_CONDITION P=102325
+EXPERIMENT T=928:10
+EXPERIMENT X(BCC,Ti)=0.85:0.03
+EXPERIMENT X(HCP,Ti)=0.99:0.03
+EXPERIMENT X(DEL,Ti) =0.33:0.03
+SET_ALTERNATE_CONDITION X(HCP,Ti)=0.99:0.03
+SET_ALTERNATE_CONDITION X(DEL,Ti)=0.33:0.03
+LABEL AEUO
+SET_START_VALUE T=928,X(Ti)=0.85

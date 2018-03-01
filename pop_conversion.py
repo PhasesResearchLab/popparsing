@@ -11,6 +11,9 @@ You should check all of your data instead of assuming it is correct.
 Please report any errors so that this module can be improved.""")
 
 
+__author__ = "Brandon Bocklund <bocklund@psu.edu>, Saurabh Bajaj <sbajaj@citrine.io>"
+
+
 class ExperimentSet(dict):
     """
     Experiment set, which is a stored as a dictionary.
@@ -103,22 +106,22 @@ def _pop_grammar():
     cmd_table_head = POPCommand('TABLE_HEAD') + int_number
     cmd_table_values = POPCommand('TABLE_VALUES') + sCOMMA + Group(
         delimitedList(Group(OneOrMore(float_number)))) + Suppress(POPCommand('TABLE_END'))
-    cmd_set_ref_state = POPCommand('SET_REFERENCE_STATE') + symbol_name + symbol_name + Optional(
+    cmd_set_ref_state = POPCommand('SET_REFERENCE_STATE') + symbol_name + Optional(sCOMMA) + symbol_name + Optional(
         OneOrMore(sCOMMA))  # TODO: should these default values be handled?
     cmd_set_condition = POPCommand('SET_CONDITION') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_label = POPCommand('LABEL_DATA') + OneOrMore(Word(alphanums))
+    cmd_alternate = POPCommand('SET_ALTERNATE_CONDITION') + OneOrMore(
+        Group((property | const) + sERROR) + Optional(sCOMMA))
     cmd_experiment_phase = POPCommand('EXPERIMENT') + OneOrMore(
         Group((property | const) + sERROR) + Optional(sCOMMA))
     cmd_start_value = POPCommand('SET_START_VALUE') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
-    cmd_set_alt_condition = POPCommand('SET_ALTERNATE_CONDITION') + OneOrMore(
-        (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_save = POPCommand('SAVE_WORKSPACES')
     return (
                cmd_equilibrium | cmd_change_status | cmd_en_symbol | cmd_table_head | cmd_table_values |
-               cmd_set_ref_state | cmd_set_condition | cmd_label |
-               cmd_experiment_phase | cmd_start_value | cmd_save | cmd_set_alt_condition) + Optional(
+               cmd_set_ref_state | cmd_set_condition | cmd_label | cmd_alternate |
+               cmd_experiment_phase | cmd_start_value | cmd_save) + Optional(
         Suppress(';')) + stringEnd
 
 
@@ -196,12 +199,19 @@ def _process_phases(exp, status_type, phases, status):
 
     """
     if status_type != 'PHASE': _unimplemented()
-    if status[0] == 'FIXED' or status[0] == 'ENTERED':  # TODO: fixed vs entered in implementation?
-        existing_phases = exp.get("phases", [])
+    # TODO: fixed vs entered in implementation?
+    if status[0] == 'FIXED' or status[0] == 'ENTERED' or status[0][:3] == 'DOR':
+        existing_phases = exp.get("phases", {})
+        if status[0][:3] == 'DOR':
+            status = status.asList()
+            status.append("DORMANT")
         exp["phases"] = {phase: status[1] for phase in phases}
-    elif status[0] == 'DORMANT' or status[0] == 'SUSPENDED':
+        for existing_phase in existing_phases:
+            exp["phases"][existing_phase] = existing_phases[existing_phase]
+    elif status[0] == 'SUSPENDED':
         pass
     return exp
+
 
 def construct_symbol(symbol_list):
     """
@@ -218,9 +228,9 @@ def construct_symbol(symbol_list):
         if s == '.':
             s = '*d'  # handle derivatives. TODO: improve derivative handling
         elif '@' in str(s):
-            print(type(s))
+            # print(type(s))
             s = str(s).replace('@', 'col')  # replace column reference, '@' with 'col'
-            print(str(s))
+            # print(str(s))
         if isinstance(s, ParseResults):
             s = unpack_parse_results(s)
             new_s = '_'
@@ -230,6 +240,7 @@ def construct_symbol(symbol_list):
         symbol_string = ''.join([symbol_string,str(s)])
     expr = parse_expr(symbol_string)
     return expr
+
 
 def _process_symbols(exp, symbol_type, symbols):
     """
@@ -260,12 +271,13 @@ def _process_symbols(exp, symbol_type, symbols):
 
     return exp
 
+
 def _process_experiment(exp, experiments):
     exp_experiments = exp.get('experiments', [])
     for experiment in experiments:
         d = {}
         d["property"] = experiment[0]
-        print(experiment)
+        # print(experiment)
         # directly create a symbolic equation with all of the
         if isinstance(experiment[1], ParseResults):
             # assume the format prop(phase) (=/>/<) symbol is followed
@@ -276,8 +288,36 @@ def _process_experiment(exp, experiments):
             # assume prop (=/>/<) symbol
             d["equality"] = experiment[1]
             d["symbol_repr"] = construct_symbol(experiment[2:])
+        exp_experiments.append(d)
     exp["experiments"] = exp_experiments
     return exp
+
+
+def _process_condition(exp, *conditions):
+    exp["conditions"] = exp.get('conditions', [])
+    for cond in conditions:
+        d = {}
+        d["property"] = cond[0]
+
+        if isinstance(cond[1], ParseResults):
+            # assume the format prop(phase) (=/>/<) symbol is followed
+            d["element"] = cond[1]
+            d["equality"] = cond[2]
+            d["symbol_repr"] = construct_symbol(cond[3:])
+        else:
+            # assume prop (=/>/<) symbol
+            d["equality"] = cond[1]
+            d["symbol_repr"] = construct_symbol(cond[2:])
+
+        exp["conditions"].append(d)
+    return exp
+
+
+def _process_reference_state(exp, *reference_states):
+    exp["reference_states"] = exp.get("reference_states", [])
+    exp["reference_states"].append({"component": reference_states[0], "phase": reference_states[1]})
+    return exp
+
 
 _POP_PROCESSOR = {
     'TABLE_HEAD': _pass,
@@ -295,14 +335,15 @@ _POP_PROCESSOR = {
     'FLUSH_BUFFER': _pass,  # 41
     'IMPORT': _pass,  # 27
     'LABEL_DATA': lambda exp, label: exp.update({"label": label}),  # implementing # 28
-    'SAVE_WORKSPACES': _pass,  # 232
+    'SAVE_WORKSPACE': _pass,  # 232
     'SET_ALL_START_VALUES': _pass,  # 162
     'SET_ALTERNATE_CONDITION': _pass,  # 30
-    'SET_CONDITION': _unimplemented,  # implementing # 165
+    'SET_CONDITION': _process_condition,  # implementing # 165
     'SET_NUMERICAL_LIMITS': _pass,  # 237
-    'SET_REFERENCE_STATE': _unimplemented,  # implementing # 169
+    'SET_REFERENCE_STATE': _process_reference_state,  # implementing # 169
     'SET_START_VALUE': _unimplemented,  # 171
     'SET_WEIGHT': _pass,  # 33
+    'SAVE_WORKSPACES': _pass,
 }
 
 
@@ -339,15 +380,17 @@ def parsable(instring):
     return splitlines
 
 
-def main(instring):
+def get_points_lst(instring):
     # create an empty
     global_symbols = {}
     current_experiment_set = global_symbols
     data = [global_symbols]  # a list of dictionaries. New dictionaries are added when a new equilibrium is added.
     commands = parsable(instring)
-    for command in commands:
+    for command in commands[1:]:
         tokens = None
         try:
+            if "ENTER_SYMBOL" in command or "EXTERNAL" in command or "CHANGE_STATUS COMPONENT" in command:
+                continue
             tokens = _pop_grammar().parseString(command)
             new_experiment_set = _POP_PROCESSOR[tokens[0]](current_experiment_set, *tokens[1:])
             # if the new object is different than the old, then we want to make that current and add
@@ -356,36 +399,16 @@ def main(instring):
                 current_experiment_set = new_experiment_set
                 data.append(current_experiment_set)
 
-        except ParseException:
-            print("Failed while parsing: " + command)
-            print("Tokens: " + str(tokens))
+        except ParseException as e:
+            print("Failed while parsing: " + command), e
+            # print("Tokens: " + str(tokens))
             raise
         except NotImplementedError:
             # print("The command {} is not implemented.".format(tokens[0]))
             pass
             # raise NotImplementedError("Command {} is not implemented for tokens {}".format(str(tokens[0]), str(tokens[1:])))
-        print(tokens)
-        print(command)
-    print(data)
+    return data
 
-
-try:
-    from mgni_test import *
-
-    strs = [mgni_full_str, ca_bi]
-    instring = ""
-    for s in strs:
-        instring = "\n".join([instring, s])
-except ImportError:
-    print('Failed to import mgni_test. Falling back to last argument to script')
-    import sys
-
-    f_arg = sys.argv[-1]
-    with open(f_arg, 'r') as f:
-        instring = f.read()
-
-if __name__ == "__main__":
-    main(instring)
 
 # IMPLEMENTATION STEPS
 # 1. Handle the syntax. Be able to parse everything. Start with Mg-Ni

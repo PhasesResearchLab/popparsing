@@ -5,7 +5,6 @@ This module handles conversion of POP files to JSON files in ESPEI format
 from sympy.parsing.sympy_parser import parse_expr
 from pyparsing import *
 from pop_keywords import expand_keyword, POP_COMMANDS
-from pop_class import Equilibrium
 
 print("""WARNING! This module is VERY experimental. You will most likely get failures or incorrect answers.
 You should check all of your data instead of assuming it is correct.
@@ -300,9 +299,12 @@ def _set_condition(exp, *conditions):
         key=temp[0]
         equal_sign=temp.index('=')
         print(type(temp))
-        condition_values['fields']=params
-        condition_values['value']=temp[equal_sign+1]
-        condition_dict[key]=condition_values
+        if len(params) > 0:
+            condition_values['components']=params
+            condition_values['value']=temp[equal_sign+1]
+            condition_dict[key]=condition_values
+        else:
+            condition_dict[key]=temp[equal_sign+1]
     exp['conditions']=condition_dict
     return exp
 	
@@ -395,8 +397,8 @@ def main(instring):
         print(tokens)
         #print(command)
     for d in data:
-        lst.append(Equilibrium(d))
-
+        lst.append(d)
+    return lst
 
 try:
     from mgni_test import *
@@ -414,7 +416,8 @@ except ImportError:
         instring = f.read()
 
 if __name__ == "__main__":
-    main(instring)
+    #main(instring)
+    pass
 
 # IMPLEMENTATION STEPS
 # 1. Handle the syntax. Be able to parse everything. Start with Mg-Ni

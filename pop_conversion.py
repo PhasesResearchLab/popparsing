@@ -265,10 +265,11 @@ def _process_experiment(exp, experiments):
     for experiment in experiments:
         d = {}
         d["property"] = experiment[0]
-        print(experiment)
+        print("Experiment: ", experiment)
         # directly create a symbolic equation with all of the
         if isinstance(experiment[1], ParseResults):
             # assume the format prop(phase) (=/>/<) symbol is followed
+            experiment = unpack_parse_results(experiment)
             d["phases"] = experiment[1]
             d["equality"] = experiment[2]
             d["symbol_repr"] = construct_symbol(experiment[3:])

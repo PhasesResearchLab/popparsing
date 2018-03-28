@@ -417,7 +417,7 @@ except ImportError:
         instring = f.read()
 
 if __name__ == "__main__":
-    #main(instring)
+    main(instring)
     pass
 
 # IMPLEMENTATION STEPS

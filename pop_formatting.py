@@ -32,19 +32,19 @@ def find_components(data):
     """
     Finds all components in the equlibrium data set
     """
-    components =[]
+    components = set()
     conditions = data['conditions']
     for key in conditions:
         sub_data = conditions[key]
         if type(sub_data)==dict and 'components' in sub_data:
-            components.append(sub_data['components'][-1])
+            components.add(sub_data['components'][-1])
     if 'experiments' not in data:
-        return components
+        return list(components)
     experiments = data['experiments']
     for experiment in experiments:
         if 'phases' in experiment and len(experiment['phases']) > 1:
-            components.append(experiment['phases'][-1])
-    return components
+            components.add(experiment['phases'][-1])
+    return list(components)
 
 def parse_table(data, index):
     """
@@ -135,10 +135,11 @@ def find_conditions(data):
 def parse_experiments(data):
     """
     For the experiment in the data structure that has data recorded in a table column,
-    the data type string and the list of table vlaues is returned
+    the data type string and the list of table values is returned
     Return:
         (str, list)- the data type/units and the list of values
     """
+    #TODO: Implement other experimental measurements and account for the degrees of freedom
     condition = ''
     table = None
     if 'experiments' not in data:
@@ -156,6 +157,20 @@ def parse_experiments(data):
         tables = parse_table(data, index)
         return condition, tables
     return None, None
+    
+def findPhases(data):
+    results = []
+    phases = data['phases']
+    for phase in phases:
+        new_dict = {}
+        new_dict['name'] = phase
+        hints = {}
+        #TODO: Ask about fixed vs. entered status implementation for pop_conversion.py
+        hints['status'] = 'NULL'
+        hints['quantity'] = phases[phase]
+        new_dict['hints'] = hints
+        results.append(new_dict)
+    return results
 
 def convert(data):
     """
@@ -163,19 +178,28 @@ def convert(data):
     JSON string
     """
     result = {}
-    result['phases'] = list(data['phases'].keys())
+    result['phases'] = findPhases(data)
     result['components'] = find_components(data)
-    #TODO: INDICATE WHICH LIST OF VALUES BELONG IN "VALUES" KEY AND 
-    #      WHICH VALUES BELONG TO A KEY UNDER "CONDITIONS" KEY
-    #TODO: Match the array dimensions set in ESPEI(size(len(P), len(T), len(sub_lattice))
     result['conditions'] = find_conditions(data)
     result['output'], result['values'] = parse_experiments(data)
-    encoder = JSONEncoder()
-    return encoder.encode(result)
+    return result
+    #result['degrees_of_freedom']
+    #encoder = JSONEncoder()
+    #return encoder.encode(result)
 
+def iterate(dataset, key):
+    for data in dataset:
+        print(data[key])
+    
 def main():
+    data = []
     for e in equilibria:
-        print(convert(e))
+        data.append(convert(e))
+    return data
 		
 if __name__=='__main__':
-    main()
+    data = main()
+
+#TODO: GET DEGREES OF FREEDOM
+#TODO: GET OTHER EXPERIMENTAL VALUES
+#TODO: GET SYMBOLS, LABELS, AND OTHER FUNCTIONS IN THE JSON STRING

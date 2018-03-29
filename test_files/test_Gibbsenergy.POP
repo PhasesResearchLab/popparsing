@@ -1,0 +1,15 @@
+﻿$
+$===================================================
+$ Gibbs energy of formation of NiAl2O4
+$===================================================
+CREATE_NEW_EQUILIBRIUM 1 1
+CHANGE_STATUS PHASE SPINEL=ENT 1
+CHANGE_STATUS PHASE FCC O2GAS=DORM
+SET_REFERENCE_STATE NI FCC,,,,
+SET_REFERENCE_STATE AL FCC,,,,
+SET_REFERENCE_STATE O O2GAS,,,,
+SET_CONDITION P=101325 T=1000 N(NI)=1 N(AL)=2
+SET_CONDITION N(O)=4
+EXPERIMENT GM=-298911:5%
+LABEL AGEN
+$ -----------

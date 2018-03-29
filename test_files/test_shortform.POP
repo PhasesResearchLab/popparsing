@@ -1,0 +1,10 @@
+﻿$
+$===================================================
+$ Lattice parameter for fcc
+$===================================================
+CREATE_NEW_EQUILIBRIUM 1 1
+CHANGE_STATUS PHASE FCC_A1=ENT 1
+SET_CONDITION P=101325 N=1 T=298.15
+SET_CONDITION X(CR)=0.05
+EXP LPFCC=4.02:5%
+LABEL ALAT

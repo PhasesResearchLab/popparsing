@@ -1,0 +1,12 @@
+﻿$
+$===================================================
+$ Heat capacity of MgFe2O4
+$===================================================
+CREATE_NEW_EQUILIBRIUM 1 1
+CHANGE_STATUS PHASE SPINEL=ENT 1
+SET_CONDITION P=101325 N(FE)=2 N(MG)=1 N(O)=4
+SET_CONDITION T=800
+ENTER_SYMBOL FUNCTION CP=H.T;
+EXPERIMENT CP=207:5%
+LABEL ACP
+$ -----------

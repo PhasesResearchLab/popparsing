@@ -23,7 +23,7 @@ def add_table_index(data, index, value):
 
 def find_components(data):
     """
-    Finds all components in the equlibrium data set
+    Finds all components in the equilibrium data set
     """
     components = set()
     if 'reference_states' in data:
@@ -51,7 +51,7 @@ def parse_table(data, index):
     Returns a list of all values of a table column
     Parameters:
         Data- the main equlibrium data structure
-        Index- the table column to parse
+        Index- the table column(indexed from 0) to parse
     """
     if 'table_values' not in data:
         return []
@@ -71,7 +71,7 @@ def condition_str(condition, phase, component):
 def find_conditions(data, symbols):
     """
     Converts the conditions in the equilibrium data structures
-    to condition values for the Espei JSON string
+    to a format to put in the equilibrium dictionary
     """
     conditions = data['conditions']
     result = {}
@@ -104,7 +104,8 @@ def parse_experiments(data, symbols):
     For the experiment in the data structure that has data recorded in a table column,
     the data type string and the list of table values is returned
     Return:
-        (str, list)- the data type/units and the list of values
+        (list, list)- a list of data types/units and 
+        the list of elements each output corresponds to
     """
     #TODO: Implement other experimental measurements and account for the degrees of freedom
     outputs = []
@@ -141,6 +142,10 @@ def parse_experiments(data, symbols):
     return outputs, values
     
 def find_phases(data):
+    """
+    Finds different phases and their details 
+    within a given parse result object
+    """
     results = []
     phases = data['phases']
     for phase in phases:
@@ -159,20 +164,42 @@ def find_phases(data):
 
 def convert(data, symbols={}):
     """
-    Main function that converts an equilibrium data structure to an ESPEI
-    JSON string
+    Converts a list of equilibriums into a list
+    of formatted dictionaries, mainly used
+    when converting a POP file into a list of dictionaries
+    
+    Parameters:
+    ------------
+    data: a single parse result object to convert to dictionary
+    symbols(optional): a dictionary of labeled constants the data may need
+    
+    Return:
+    --------
+    dict: a single dictionary  
     """
     result = {}
     result['phases'] = find_phases(data)
     result['components'] = find_components(data)
     result['conditions'] = find_conditions(data, symbols)
     result['outputs'], result['values'] = parse_experiments(data, symbols)
+    result['reference'] = data['label']
     return result
-    #result['degrees_of_freedom']
-    #encoder = JSONEncoder()
-    #return encoder.encode(result)
     
 def convert_set(equilibria, symbols={}):
+    """
+    Converts a list of equilibriums into a list
+    of formatted dictionaries, mainly used
+    when converting a POP file into a list of dictionaries
+    
+    Parameters:
+    ------------
+    equilibria: a list of parse results to convert
+    symbols(optional): a dictionary of labeled constants
+    
+    Return:
+    ---------
+    list: the list of equilibrium dictionaries
+    """
     data = []
     for case in equilibria:
         data.append(convert(case, symbols))
@@ -180,6 +207,19 @@ def convert_set(equilibria, symbols={}):
     
     
 def convert_file(file_name):
+    """
+    Converts a POP file with an inputted file name
+    and converts each of its equilibrium into 
+    a list of formatted dictionary
+    
+    Parameters:
+    -----------
+    file_name: the name of the file to be converted
+    
+    Return:
+    -----------
+    list - a list of equilibrium dictionaries
+    """
     fp = open(file_name, 'r')
     lst = get_points_lst(fp.read())
     fp.close()
@@ -188,6 +228,13 @@ def convert_file(file_name):
     return convert_set(equilibria, symbols)
     
 def main(infile, outfile):
+    """
+    The code that runs when script is run
+    through the command prompt
+    
+    Syntax: python pop_formatting.py [input_pop_filename] [output_filename]
+    
+    """
     dict_lst = convert_file(infile)
     import json
     json_obj = json.JSONEncoder()
@@ -200,6 +247,6 @@ if __name__=='__main__':
     if len(sys.argv)>=2:
         main(sys.argv[-2], sys.argv[-1])
 
-#TODO: GET DEGREES OF FREEDOM
-#TODO: GET OTHER EXPERIMENTAL VALUES
 #TODO: GET SYMBOLS, LABELS, AND OTHER FUNCTIONS IN THE JSON STRING
+#TODO: GET POP_CONVERSION TO IMPLEMENT FIXED VS. ENTERED
+#TODO: GET POP_CONVERSION TO IMPLEMENT DEGREES OF FREEDOM

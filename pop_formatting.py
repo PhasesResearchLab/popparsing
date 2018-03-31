@@ -73,6 +73,9 @@ def find_conditions(data, symbols):
     Converts the conditions in the equilibrium data structures
     to a format to put in the equilibrium dictionary
     """
+    # for some reason symbols is passed a dictionary of {'symbols': {symbols dict}}
+    # TODO: fix the root cause in get_points_lst
+    symbols = symbols.get('symbols', {})
     conditions = data['conditions']
     result = {}
     for condition in conditions:
@@ -86,12 +89,14 @@ def find_conditions(data, symbols):
             name = condition_str(name, phase, component)
         value = condition['symbol_repr']
         value_str = str(value)
-        if value_str[:3]=='col':    
+        if value_str[:3]=='col':
             index = int(value_str[3:])-1
             value = parse_table(data, index)
-        elif value in symbols:
+        elif value in symbols.keys():
             #TODO: Find better global symbol implementation
             value = float(symbols[value])
+        elif value_str in symbols.keys():
+            value = float(symbols[value_str])
         else:
             #JSONEncoder may not support custom Float class
             #TODO: Decide if Float objects need to be converted to primitive float objects

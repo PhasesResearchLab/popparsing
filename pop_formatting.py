@@ -204,8 +204,26 @@ def convert_set(equilibria, symbols={}):
     for case in equilibria:
         data.append(convert(case, symbols))
     return data
-    
-    
+
+
+def convert_pop_data(data):
+    """
+
+    Parameters
+    ----------
+    data : str
+
+    Returns
+    -------
+    list
+        A list of equilibrium dictionaries
+    """
+    lst = get_points_lst(data)
+    symbols = lst[0]
+    equilibria = lst[1:]
+    return convert_set(equilibria, symbols)
+
+
 def convert_file(file_name):
     """
     Converts a POP file with an inputted file name
@@ -220,13 +238,10 @@ def convert_file(file_name):
     -----------
     list - a list of equilibrium dictionaries
     """
-    fp = open(file_name, 'r')
-    lst = get_points_lst(fp.read())
-    fp.close()
-    symbols = lst[0]
-    equilibria = lst[1:]
-    return convert_set(equilibria, symbols)
-    
+    with open(file_name, 'r') as fp:
+        pop_data = fp.read()
+    return convert_pop_data(pop_data)
+
 def main(infile, outfile):
     """
     The code that runs when script is run

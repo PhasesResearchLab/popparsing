@@ -3,15 +3,8 @@ A rough implementation of a script that converts parse results
 from pop_conversion.py to usable Espei JSON strings (that can
 be written into Espei JSON files)
 """
-from pop_conversion import main
-from json import JSONEncoder
-
-name = "Mgni.pop"
-fp = open(name, 'r')
-lst = main(fp.read())
-symbols = lst[0]['symbols']
-equilibria = lst[1:]
-
+from pop_conversion import get_points_lst, unpack_parse_results
+import sys
 
 def add_table_index(data, index, value):
     """
@@ -33,17 +26,24 @@ def find_components(data):
     Finds all components in the equlibrium data set
     """
     components = set()
-    conditions = data['conditions']
-    for key in conditions:
-        sub_data = conditions[key]
-        if type(sub_data)==dict and 'components' in sub_data:
-            components.add(sub_data['components'][-1])
-    if 'experiments' not in data:
-        return list(components)
-    experiments = data['experiments']
-    for experiment in experiments:
-        if 'phases' in experiment and len(experiment['phases']) > 1:
-            components.add(experiment['phases'][-1])
+    if 'reference_states' in data:
+        states = data['reference_states']
+        for state in states:
+            if 'component' in state:
+                components.add(state['component'])
+    if 'conditions' in data:
+        conditions = data['conditions']
+        for sub_data in conditions:
+            if 'element' in sub_data:
+                info = unpack_parse_results(sub_data['element'])
+                components.add(info[-1])
+    if 'experiments' in data:
+        experiments = data['experiments']
+        for experiment in experiments:
+            if 'phases' in experiment:
+                case = unpack_parse_results(experiment['phases'])
+                if len(case) > 1:
+                    components.add(case[-1])
     return list(components)
 
 def parse_table(data, index):
@@ -62,77 +62,44 @@ def condition_str(condition, phase, component):
     Returns a string representation of
     a condition for a specific phase and component
     """
-    return condition + '(' + phase + ',' + component + ')'
-
-def get_phase_components(condition, phases, components):
-    """
-    Given a specific condition, a list of all phases, and a list of
-    mixed phases and components:
-        If there is only one element in the mixed list of components
-        and phases, assume it is the only component and match with the first
-        phase in the list of phases to return one phase_component string
-        Otherwise, if there are multiple, assume the even_indexed elements(0,2,4,etc.)
-        contains the phases and pair with the odd-indexed elements assumed to be components
-        to return a list of phase-component strings for a specific condition/measurement(i.e. X(mole fraction))
-    Parameters:
-        condition(str): the specific condition to generate strings for
-        phases(list): the equilibrium's list of phases
-        components(list): a list of one component or mixed list of components and phases
-    """
-    results = []
-    if len(components)==1:
-        results.append(condition_str(condition, \
-        phases[0], components[0]))
+    if phase!=None:
+        return condition + '(' + phase + ',' + component + ')'
     else:
-        for i in range(0, len(components), 2):
-            results.append(condition_str(condition, \
-            components[i], components[i+1]))
-    return results
-
-def parse_condition(data, condition_key):
-    """
-    If a condition key contains a data structure, properly parse 
-    its value into a list of individual conditions and their identical value
-    Note: this assumes that there is only one value for all phase-components in that one condition
-    Parameters:
-        data: the main equilibrium data structure
-        condition_key: the specific condition to further parse
-    Return:
-        (list, str/int/float)- a tuplet of a list of separate components and a value
-    """
-    condition = data['conditions'][condition_key]
-    phases = list(data['phases'].keys())
-    components = condition['components']
-    return get_phase_components(condition_key, phases, components), condition['value']		
+        return condition + '(' + component + ')'
     
 
-def find_conditions(data):
+def find_conditions(data, symbols):
     """
     Converts the conditions in the equilibrium data structures
     to condition values for the Espei JSON string
     """
     conditions = data['conditions']
     result = {}
-    for key in conditions:
-        value = conditions[key]
-        if type(value)==dict:
-            components, sub_val = parse_condition(data, key)
-            if type(sub_val)==str and sub_val[0]=='@':
-                index = int(sub_val[1:])-1
-                sub_val = parse_table(data, index)
-            for c in components:
-                result[c] = sub_val
+    for condition in conditions:
+        name = condition['property']
+        if 'element' in condition:
+            lst = condition['element']
+            component = lst[-1]
+            phase = None
+            if len(lst) > 1:
+                phase = lst[-2]
+            name = condition_str(name, phase, component)
+        value = condition['symbol_repr']
+        value_str = str(value)
+        if value_str[:3]=='col':    
+            index = int(value_str[3:])-1
+            value = parse_table(data, index)
         elif value in symbols:
-            #JSON Encoder does not support custom Float class
-            result[key] = float(symbols[value])
-        elif type(value)==str and value[0]=='@':
-            index = int(value[1:])-1
-            result[key]= parse_table(data, index)
+            #TODO: Find better global symbol implementation
+            value = float(symbols[value])
         else:
-            result[key] = value
+            #JSONEncoder may not support custom Float class
+            #TODO: Decide if Float objects need to be converted to primitive float objects
+            value = float(value)
+        result[name] = value
     return result
 
-def parse_experiments(data):
+def parse_experiments(data, symbols):
     """
     For the experiment in the data structure that has data recorded in a table column,
     the data type string and the list of table values is returned
@@ -140,25 +107,40 @@ def parse_experiments(data):
         (str, list)- the data type/units and the list of values
     """
     #TODO: Implement other experimental measurements and account for the degrees of freedom
-    condition = ''
-    table = None
+    outputs = []
+    values = []
     if 'experiments' not in data:
         return
     experiments = data['experiments']
     for case in experiments:
-        if not str(case['symbol_repr'])[:3]=='col':
-            continue
-        index = int(str(case['symbol_repr'])[3:])-1
         condition = case['property']
         if 'phases' in case:
-            components = case['phases']
-            phases = list(data['phases'].keys())
-            condition = get_phase_components(condition, phases, components)[0]
-        tables = parse_table(data, index)
-        return condition, tables
-    return None, None
+            components = unpack_parse_results(case['phases'])
+            element = components[-1]
+            phase = None
+            if len(components) > 1:
+                phase = components[-2]
+            condition = condition_str(condition, phase, element)
+        value = case['symbol_repr']
+        equality = case['equality']
+        if str(value)[:3]=='col':
+            index = int(str(case['symbol_repr'])[3:])-1
+            value = parse_table(data, index)
+        elif value in symbols:
+            value = float(symbols[value])
+        else:
+            value = float(value)
+        if equality != '=':
+            new_dict = {
+            'equality' : equality,
+            'value' : value
+            }
+            value = new_dict
+        outputs.append(condition)
+        values.append(value)
+    return outputs, values
     
-def findPhases(data):
+def find_phases(data):
     results = []
     phases = data['phases']
     for phase in phases:
@@ -166,39 +148,57 @@ def findPhases(data):
         new_dict['name'] = phase
         hints = {}
         #TODO: Ask about fixed vs. entered status implementation for pop_conversion.py
-        hints['status'] = 'NULL'
-        hints['quantity'] = phases[phase]
+        if type(phases[phase])==str:
+            hints['status'] = phases[phase]
+        else:
+            hints['status'] = 'ENTERED/FIXED'
+            hints['quantity'] = phases[phase]
         new_dict['hints'] = hints
         results.append(new_dict)
     return results
 
-def convert(data):
+def convert(data, symbols={}):
     """
     Main function that converts an equilibrium data structure to an ESPEI
     JSON string
     """
     result = {}
-    result['phases'] = findPhases(data)
+    result['phases'] = find_phases(data)
     result['components'] = find_components(data)
-    result['conditions'] = find_conditions(data)
-    result['output'], result['values'] = parse_experiments(data)
+    result['conditions'] = find_conditions(data, symbols)
+    result['outputs'], result['values'] = parse_experiments(data, symbols)
     return result
     #result['degrees_of_freedom']
     #encoder = JSONEncoder()
     #return encoder.encode(result)
-
-def iterate(dataset, key):
-    for data in dataset:
-        print(data[key])
     
-def main():
+def convert_set(equilibria, symbols={}):
     data = []
-    for e in equilibria:
-        data.append(convert(e))
+    for case in equilibria:
+        data.append(convert(case, symbols))
     return data
+    
+    
+def convert_file(file_name):
+    fp = open(file_name, 'r')
+    lst = get_points_lst(fp.read())
+    fp.close()
+    symbols = lst[0]
+    equilibria = lst[1:]
+    return convert_set(equilibria, symbols)
+    
+def main(infile, outfile):
+    dict_lst = convert_file(infile)
+    import json
+    json_obj = json.JSONEncoder()
+    fp = open(outfile, 'w')
+    outstring = json_obj.encode(dict_lst)
+    fp.write(outstring)
+    fp.close()
 		
 if __name__=='__main__':
-    data = main()
+    if len(sys.argv)>=2:
+        main(sys.argv[-2], sys.argv[-1])
 
 #TODO: GET DEGREES OF FREEDOM
 #TODO: GET OTHER EXPERIMENTAL VALUES

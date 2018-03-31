@@ -2,9 +2,8 @@ language: python
 python:
   - "3.6"
 install:
-  - pip install sympy pyparsing
-before_script:
-  - pip install -e .
-script: py.test -v popparsing
+  - pip install -e '.[dev]'
+script:
+  - py.test -v
 notifications:
   email: False

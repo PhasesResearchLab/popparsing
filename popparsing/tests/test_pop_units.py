@@ -4,8 +4,8 @@ Integration tests for bits of POP files
 
 import pytest
 
-from popparsing.pop_formatting import convert_pop_data
-from popparsing.tests.testing_data import *
+from ..pop_formatting import convert_pop_data
+from .testing_data import *
 
 
 def test_activity_data_are_parsed():

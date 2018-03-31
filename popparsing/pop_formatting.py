@@ -14,7 +14,7 @@ def add_table_index(data, index, value):
         data- the main equilibrium data dictionary/parse results
         index- the index of the table column
         value- the type of data the table column records
-	"""
+    """
     if "indexes" not in data:
         data["indexes"] = []
     while len(data["indexes"]) < index:

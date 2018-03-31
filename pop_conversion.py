@@ -386,7 +386,7 @@ def get_points_lst(instring):
     current_experiment_set = global_symbols
     data = [global_symbols]  # a list of dictionaries. New dictionaries are added when a new equilibrium is added.
     commands = parsable(instring)
-    for command in commands[1:]:
+    for command in commands:
         tokens = None
         try:
             if "ENTER_SYMBOL" in command or "EXTERNAL" in command or "CHANGE_STATUS COMPONENT" in command:

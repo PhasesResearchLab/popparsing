@@ -3,7 +3,6 @@ A rough implementation of a script that converts parse results
 from pop_conversion.py to usable Espei JSON strings (that can
 be written into Espei JSON files)
 """
-import sys, json
 
 from popparsing.pop_conversion import get_points_lst, unpack_parse_results
 
@@ -249,24 +248,6 @@ def convert_file(file_name):
         pop_data = fp.read()
     return convert_pop_data(pop_data)
 
-def main(infile, outfile):
-    """
-    The code that runs when script is run
-    through the command prompt
-    
-    Syntax: python pop_formatting.py [input_pop_filename] [output_filename]
-    
-    """
-    dict_lst = convert_file(infile)
-    json_obj = json.JSONEncoder()
-    fp = open(outfile, 'w')
-    outstring = json_obj.encode(dict_lst)
-    fp.write(outstring)
-    fp.close()
-		
-if __name__=='__main__':
-    if len(sys.argv)>=2:
-        main(sys.argv[-2], sys.argv[-1])
 
 #TODO: GET SYMBOLS, LABELS, AND OTHER FUNCTIONS IN THE JSON STRING
 #TODO: GET POP_CONVERSION TO IMPLEMENT FIXED VS. ENTERED

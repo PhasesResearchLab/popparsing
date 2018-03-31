@@ -3,8 +3,10 @@ A rough implementation of a script that converts parse results
 from pop_conversion.py to usable Espei JSON strings (that can
 be written into Espei JSON files)
 """
-from pop_conversion import get_points_lst, unpack_parse_results
 import sys
+
+from popparsing.pop_conversion import get_points_lst, unpack_parse_results
+
 
 def add_table_index(data, index, value):
     """

@@ -2,13 +2,10 @@
 This module handles conversion of POP files to JSON files in ESPEI format
 """
 
-from sympy.parsing.sympy_parser import parse_expr
 from pyparsing import *
-from pop_keywords import expand_keyword, POP_COMMANDS
+from sympy.parsing.sympy_parser import parse_expr
 
-print("""WARNING! This module is VERY experimental. You will most likely get failures or incorrect answers.
-You should check all of your data instead of assuming it is correct.
-Please report any errors so that this module can be improved.""")
+from popparsing.pop_keywords import expand_keyword
 
 
 __author__ = "Brandon Bocklund <bocklund@psu.edu>, Saurabh Bajaj <sbajaj@citrine.io>"

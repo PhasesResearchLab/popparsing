@@ -2,9 +2,9 @@
 Integration tests for bits of POP files
 """
 
-from pop_formatting import convert_pop_data
-
 import pytest
+
+from popparsing.pop_formatting import convert_pop_data
 from popparsing.tests.testing_data import *
 
 

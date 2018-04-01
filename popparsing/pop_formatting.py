@@ -2,24 +2,10 @@
 A rough implementation of a script that converts parse results 
 from pop_conversion.py to usable Espei JSON strings (that can
 be written into Espei JSON files)
+
 """
 
 from .pop_conversion import get_points_lst, unpack_parse_results
-
-
-def add_table_index(data, index, value):
-    """
-    Adds information that indicates which table column belongs to which type of data
-    Parameters:
-        data- the main equilibrium data dictionary/parse results
-        index- the index of the table column
-        value- the type of data the table column records
-    """
-    if "indexes" not in data:
-        data["indexes"] = []
-    while len(data["indexes"]) < index:
-        data["indexes"].append('')
-    data["indexes"][index - 1] = value
 
 
 def find_components(data):
@@ -50,9 +36,17 @@ def find_components(data):
 def parse_table(data, index):
     """
     Returns a list of all values of a table column
-    Parameters:
-        Data- the main equlibrium data structure
-        Index- the table column(indexed from 0) to parse
+
+    Parameters
+    ----------
+    data : list
+        the main equlibrium data structure
+    index : int
+        the table column (indexed from 0) to parse
+
+    Returns
+    -------
+    list
     """
     if 'table_values' not in data:
         return []
@@ -60,8 +54,7 @@ def parse_table(data, index):
         
 def condition_str(condition, phase, component):
     """
-    Returns a string representation of
-    a condition for a specific phase and component
+    Returns a string representation of a condition for a specific phase and component.
     """
     if phase!=None:
         return condition + '(' + phase + ',' + component + ')'
@@ -109,11 +102,13 @@ def parse_experiments(data, symbols):
     """
     For the experiment in the data structure that has data recorded in a table column,
     the data type string and the list of table values is returned
-    Return:
-        (list, list)- a list of data types/units and 
-        the list of elements each output corresponds to
+
+    Returns
+    -------
+    tuple
+        2 tuple of a list of data types/units and the list of elements each output corresponds to
     """
-    #TODO: Implement other experimental measurements and account for the degrees of freedom
+    # TODO: Implement other experimental measurements and account for the degrees of freedom
     outputs = []
     values = []
     if 'experiments' not in data:
@@ -174,14 +169,16 @@ def convert(data, symbols={}):
     of formatted dictionaries, mainly used
     when converting a POP file into a list of dictionaries
     
-    Parameters:
-    ------------
+    Parameters
+    ----------
     data: a single parse result object to convert to dictionary
     symbols(optional): a dictionary of labeled constants the data may need
     
-    Return:
-    --------
-    dict: a single dictionary  
+    Returns
+    -------
+    dict
+        a single dictionary
+
     """
     result = {}
     result['phases'] = find_phases(data)
@@ -197,13 +194,13 @@ def convert_set(equilibria, symbols={}):
     of formatted dictionaries, mainly used
     when converting a POP file into a list of dictionaries
     
-    Parameters:
-    ------------
+    Parameters
+    ----------
     equilibria: a list of parse results to convert
     symbols(optional): a dictionary of labeled constants
     
-    Return:
-    ---------
+    Returns
+    -------
     list: the list of equilibrium dictionaries
     """
     data = []
@@ -236,12 +233,12 @@ def convert_file(file_name):
     and converts each of its equilibrium into 
     a list of formatted dictionary
     
-    Parameters:
-    -----------
+    Parameters
+    ----------
     file_name: the name of the file to be converted
     
-    Return:
-    -----------
+    Returns
+    -------
     list - a list of equilibrium dictionaries
     """
     with open(file_name, 'r') as fp:

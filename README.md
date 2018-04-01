@@ -1,4 +1,4 @@
-# popparsing: A arser for thermodynamic data stored in POP files
+# popparsing: A parser for thermodynamic data stored in POP files
 
 ## Installing
 

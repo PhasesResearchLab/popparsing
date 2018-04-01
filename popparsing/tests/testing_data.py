@@ -1,3 +1,7 @@
+"""
+Data for testing
+"""
+
 POP_ACTIVITY = """
 $===================================================
 $ Carbon activity data in the fcc phase
@@ -14,7 +18,7 @@ LABEL ACTI
 
 POP_DRIVING_FORCE = """
 $===================================================
-$  DRIVING FORCE CONSTRAINTS   ORT - (ORT+Delta)
+$  DRIVING FORCE CONSTRAINTS   ORT - (ORT+Delta)
 $===================================================
 $
 $
@@ -125,7 +129,7 @@ LABEL ALAT
 
 POP_TABLE_X_HMR = """
 $===================================================
-$  BCC FORMATION ENTHALPIES x(Ti)=0.1 to 0.6
+$  BCC FORMATION ENTHALPIES X(TI)=0.1 TO 0.6
 $===================================================
 TABLE_HEAD 540
 CREATE_NEW_EQUILIBRIUM @@,1

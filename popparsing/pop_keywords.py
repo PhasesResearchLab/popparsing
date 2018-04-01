@@ -1,6 +1,7 @@
 """
 This module defines valid POP keywords and handles abbreviations.
 Not all are supported yet.
+
 """
 
 import re
@@ -55,18 +56,22 @@ def expand_keyword(possible, candidate):
     """
     Expand an abbreviated keyword based on the provided list.
     From pycalphad.io.tdb_keywords
+
     Parameters
     ----------
     possible : list of str
         Possible keywords for 'candidate' to be matched against.
     candidate : str
         Abbreviated keyword to expand.
+
     Returns
     -------
     list of str of matching expanded keywords
+
     Examples
     --------
     None yet.
+
     """
     # Rewritten to escape each token in the split string, instead of the input
     # The reason is that Python 2.7 will escape underscore characters

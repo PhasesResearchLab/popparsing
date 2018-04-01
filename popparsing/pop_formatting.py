@@ -163,7 +163,7 @@ def find_phases(data):
         results.append(new_dict)
     return results
 
-def convert(data, symbols={}):
+def convert(data, symbols=None):
     """
     Converts a list of equilibriums into a list
     of formatted dictionaries, mainly used
@@ -171,8 +171,10 @@ def convert(data, symbols={}):
     
     Parameters
     ----------
-    data: a single parse result object to convert to dictionary
-    symbols(optional): a dictionary of labeled constants the data may need
+    data : list
+        A single parse result object to convert to dictionary
+    symbols : dict
+        A dictionary of labeled constants the data may need
     
     Returns
     -------
@@ -180,6 +182,7 @@ def convert(data, symbols={}):
         a single dictionary
 
     """
+    symbols = symbols or {}
     result = {}
     result['phases'] = find_phases(data)
     result['components'] = find_components(data)
@@ -188,7 +191,7 @@ def convert(data, symbols={}):
     result['reference'] = data['label']
     return result
     
-def convert_set(equilibria, symbols={}):
+def convert_set(equilibria, symbols=None):
     """
     Converts a list of equilibriums into a list
     of formatted dictionaries, mainly used
@@ -196,13 +199,16 @@ def convert_set(equilibria, symbols={}):
     
     Parameters
     ----------
-    equilibria: a list of parse results to convert
-    symbols(optional): a dictionary of labeled constants
+    equilibria : list
+        A list of parse results to convert
+    symbols : dict
+        A dictionary of labeled constant symbols
     
     Returns
     -------
     list: the list of equilibrium dictionaries
     """
+    symbols = symbols or {}
     data = []
     for case in equilibria:
         data.append(convert(case, symbols))

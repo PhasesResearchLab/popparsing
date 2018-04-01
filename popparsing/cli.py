@@ -4,7 +4,8 @@ Command Line Interface for popparsing
 
 import sys, json
 
-from popparsing.pop_formatting import convert_file
+from .conversion import convert_file
+
 
 def main(infile, outfile):
     """

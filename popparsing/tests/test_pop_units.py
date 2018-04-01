@@ -4,7 +4,7 @@ Integration tests for bits of POP files
 
 import pytest
 
-from ..pop_formatting import convert_pop_data
+from ..conversion import convert_pop_data
 from .testing_data import *
 
 

@@ -162,6 +162,18 @@ def find_phases(data):
         new_dict['hints'] = hints
         results.append(new_dict)
     return results
+    
+def find_reference_states(data):
+    if 'reference_states' in data:
+        lst = data['reference_states']
+        new_dict = {}
+        for state in lst:
+            component = state['component']
+            phase = state['phase']
+            new_dict[component] = phase
+        return new_dict
+    else:
+        return {}
 
 def convert(data, symbols=None):
     """
@@ -187,6 +199,11 @@ def convert(data, symbols=None):
     result['phases'] = find_phases(data)
     result['components'] = find_components(data)
     result['conditions'] = find_conditions(data, symbols)
+    #4 OPTIONS FOR PUTTING IN REFERENCE STATES
+    result['conditions']['reference_states'] = find_reference_states(data)
+    #result['conditions']['reference_states'] = data['reference_states']
+    #result['reference_states'] = find_reference_states(data)
+    #result['reference_states'] = data['reference_states']
     result['outputs'], result['values'] = parse_experiments(data, symbols)
     result['reference'] = data['label']
     return result

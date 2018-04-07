@@ -19,18 +19,26 @@ popparsing\.cli module
     :undoc-members:
     :show-inheritance:
 
-popparsing\.pop\_conversion module
-----------------------------------
+popparsing\.conversion module
+-----------------------------
 
-.. automodule:: popparsing.pop_conversion
+.. automodule:: popparsing.conversion
     :members:
     :undoc-members:
     :show-inheritance:
 
-popparsing\.pop\_formatting module
-----------------------------------
+popparsing\.formatting module
+-----------------------------
 
-.. automodule:: popparsing.pop_formatting
+.. automodule:: popparsing.formatting
+    :members:
+    :undoc-members:
+    :show-inheritance:
+
+popparsing\.parsing module
+--------------------------
+
+.. automodule:: popparsing.parsing
     :members:
     :undoc-members:
     :show-inheritance:

@@ -59,6 +59,40 @@ def test_mg_ni_can_be_parsed():
 
 
 @pytest.mark.xfail
+def test_reference_states_are_parsed():
+    """Test that reference state data can be parsed"""
+    eq = convert_pop_data(POP_ACTIVITY)[0]
+    assert eq['reference_states']['C'] == 'GRAPHITE'
+
+
+@pytest.mark.xfail
+def test_phase_status_can_be_fixed():
+    """Test that the status of a phase can be fixed with a certain value"""
+    eq = convert_pop_data(POP_ENTROPY)[0]
+    assert eq['phases']['CUO']['hints']['status'] == 'ENTERED'
+    assert eq['phases']['CU2O']['hints']['status'] == 'ENTERED'
+
+    assert eq['phases']['CU2O']['hints']['value'] == 0.0
+    assert eq['phases']['CU2O']['hints']['value'] == 1.0
+
+
+#@pytest.mark.xfail
+def test_phase_status_can_be_entered():
+    """Test that the status of a phase can be entered with a certain value"""
+    eq = convert_pop_data(POP_GIBBS_ENERGY)[0]
+    assert eq['phases']['SPINEL']['hints']['status'] == 'ENTERED'
+    assert eq['phases']['FCC']['hints']['status'] == 'DORMANT'
+    assert eq['phases']['O2GAS']['hints']['status'] == 'DORMANT'
+
+    assert eq['phases']['SPINEL']['hints']['value'] == 1.0
+
+# TODO: write similar tests for DORMANT and SUSPENDED
+# TODO: write tests that ensure that abbreviated status are properly parsed
+# e.g. CH-S P CU2O=F 1 should give same result as
+# CHANGE-STATUS PHASE CU2O=FIXED 1
+# should be true for all statuses
+
+@pytest.mark.xfail
 def test_data_from_parrot_can_be_parsed():
     """Test that data output from PARROT can be parsed"""
     convert_pop_data(POP_FROM_PARROT)

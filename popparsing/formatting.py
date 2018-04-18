@@ -13,6 +13,7 @@ def find_components(data):
     Finds all components in the equilibrium data set
     """
     components = set()
+    #TODO: OPTIMIZE THIS!
     if 'reference_states' in data:
         states = data['reference_states']
         for state in states:
@@ -25,12 +26,14 @@ def find_components(data):
                 info = unpack_parse_results(sub_data['element'])
                 components.add(info[-1])
     if 'experiments' in data:
+        phases = data['phases'].keys()
         experiments = data['experiments']
         for experiment in experiments:
             if 'phases' in experiment:
-                case = unpack_parse_results(experiment['phases'])
-                if len(case) > 1:
-                    components.add(case[-1])
+                cases = unpack_parse_results(experiment['phases'])
+                for case in cases:
+                    if case not in phases:
+                        components.add(case)
     return list(components)
 
 def parse_table(data, index):
@@ -147,11 +150,9 @@ def find_phases(data):
     Finds different phases and their details 
     within a given parse result object
     """
-    results = []
+    results = {}
     phases = data['phases']
     for phase in phases:
-        new_dict = {}
-        new_dict['name'] = phase
         hints = {}
         #TODO: Ask about fixed vs. entered status implementation for pop_conversion.py
         if type(phases[phase])==str:
@@ -159,8 +160,7 @@ def find_phases(data):
         else:
             hints['status'] = 'ENTERED/FIXED'
             hints['quantity'] = phases[phase]
-        new_dict['hints'] = hints
-        results.append(new_dict)
+        results[phase] = hints
     return results
     
 def find_reference_states(data):

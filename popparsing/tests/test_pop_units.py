@@ -7,15 +7,46 @@ import pytest
 from ..conversion import convert_pop_data
 from .testing_data import *
 
+def match_lists(lst1, lst2):
+    return sorted(lst1)==sorted(lst2)
 
 def test_activity_data_are_parsed():
     """Test that activity data can be parsed"""
-    result = convert_pop_data(POP_ACTIVITY)
+    results = convert_pop_data(POP_ACTIVITY)
+    assert len(results)==1
+    eq = results[0]
+    assert eq['phases']=={
+        'FCC_A1' : {
+            'status' : 'FIXED',
+            'quantity' : 1.0
+        },
+        'GRAPHITE': {
+            'status' : 'DORMANT'
+        }
+        
+    }
+    components = ['C', 'MN']
+    assert match_lists(eq['components'], components)==True
+    assert eq['conditions'] == {
+        'P' : 101325,
+        'T' : 1273,
+        'X(MN)' : 0.03,
+        'X(C)' : 0.03,
+        'reference_states' : {
+            'C' : 'GRAPHITE'
+        }
+    }
+    assert eq['outputs']==['ACR(C)']
+    assert eq['values']==[0.29]
+    assert eq['reference']=='ACTI'
 
 
 def test_driving_force_data_are_parsed():
     """Test that driving force data can be parsed"""
     result = convert_pop_data(POP_DRIVING_FORCE)
+    assert len(result)==1
+    eq = result[0]
+    
 
 
 def test_entropy_data_are_parsed():

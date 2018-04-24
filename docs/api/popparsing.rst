@@ -19,6 +19,8 @@ popparsing\.cli module
     :undoc-members:
     :show-inheritance:
 
+*Usage:* ``python -m popparsing.cli [input_file_name] [output_file_name]``
+    
 popparsing\.conversion module
 -----------------------------
 

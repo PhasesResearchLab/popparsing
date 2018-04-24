@@ -159,7 +159,7 @@ def find_phases(data):
             hints['status'] = phases[phase][1]
         else:
             hints['status'] = phases[phase][0]
-            hints['quantity'] = phases[phase][1]
+            hints['value'] = phases[phase][1]
         results[phase] = hints
     return results
     

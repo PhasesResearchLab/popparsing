@@ -10,7 +10,7 @@ from .testing_data import *
 def match_lists(lst1, lst2):
     return sorted(lst1)==sorted(lst2)
 
-@pytest.mark.xfail
+
 def test_activity_data_are_parsed():
     """Test that activity data can be parsed"""
     results = convert_pop_data(POP_ACTIVITY)
@@ -19,7 +19,7 @@ def test_activity_data_are_parsed():
     assert eq['phases']=={
         'FCC_A1' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'GRAPHITE': {
             'status' : 'DORMANT'
@@ -41,7 +41,7 @@ def test_activity_data_are_parsed():
     assert eq['values']==[0.29]
     assert eq['reference']=='ACTI'
 
-@pytest.mark.xfail
+
 def test_driving_force_data_are_parsed():
     """Test that driving force data can be parsed"""
     result = convert_pop_data(POP_DRIVING_FORCE)
@@ -50,7 +50,7 @@ def test_driving_force_data_are_parsed():
     assert eq['phases']=={
         'ORT' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'DEL' : {
             'status' : 'DORMANT'
@@ -79,7 +79,7 @@ def test_driving_force_data_are_parsed():
     assert eq['values']==values
     assert eq['reference']=='ADRIV'
     
-@pytest.mark.xfail
+
 def test_entropy_data_are_parsed():
     """Test that entropy data can be parsed"""
     result = convert_pop_data(POP_ENTROPY)
@@ -88,11 +88,11 @@ def test_entropy_data_are_parsed():
     assert eq['phases']=={
         'CU2O' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'CUO' : {
             'status' : 'FIXED',
-            'quantity' : 0.0
+            'value' : 0.0
         }
     }
     assert eq['components']==['C']
@@ -106,7 +106,7 @@ def test_entropy_data_are_parsed():
     assert eq['values']==[92.36, 0.29]
     assert eq['reference']=='AENT'
 
-@pytest.mark.xfail
+
 def test_eutectoid_data_are_parsed():
     """Test that three phase equilibria data can be parsed"""
     result = convert_pop_data(POP_EUTECTOID)
@@ -115,15 +115,15 @@ def test_eutectoid_data_are_parsed():
     assert eq['phases']=={
         'BCC' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'HCP' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'DEL' : {
             'status' : 'FIXED',
-            'quantity' : 1.0
+            'value' : 1.0
         }
     }
     assert eq['components']==['Ti']
@@ -139,7 +139,7 @@ def test_eutectoid_data_are_parsed():
     assert eq['values']==[ 0.85, 0.99, 0.33]
     assert eq['reference']=='AEUO'
 
-@pytest.mark.xfail
+
 def test_gibbs_energy_data_are_parsed():
     """Test that Gibbs energy data can be parsed"""
     result = convert_pop_data(POP_GIBBS_ENERGY)
@@ -148,7 +148,7 @@ def test_gibbs_energy_data_are_parsed():
     assert eq['phases']=={
         'SPINEL' : {
             'status' : 'ENTERED',
-            'quantity' : 1.0
+            'value' : 1.0
         },
         'FCC' : {
             'status' : 'DORMANT'
@@ -175,7 +175,7 @@ def test_gibbs_energy_data_are_parsed():
     assert eq['values']==[-298911]
     assert eq['reference']=='AGEN'
 
-@pytest.mark.xfail
+
 def test_heat_capacity_data_are_parsed():
     """Test that heat capacity data can be parsed"""
     result = convert_pop_data(POP_HEAT_CAPACITY)
@@ -184,7 +184,7 @@ def test_heat_capacity_data_are_parsed():
     assert eq['phases']=={
         'SPINEL' : {
             'status' : 'ENTERED',
-            'quantity' : 1.0
+            'value' : 1.0
         }
     }
     assert match_lists(eq['components'],['FE', 'MG', 'O'])==True
@@ -200,7 +200,7 @@ def test_heat_capacity_data_are_parsed():
     assert eq['values']==[207]
     assert eq['reference']=='ACP'
 
-@pytest.mark.xfail
+
 def test_lattice_parameter_data_are_parsed():
     """Test that lattice parameter data can be parsed"""
     result = convert_pop_data(POP_LATTICE_PARAMETER)
@@ -209,7 +209,7 @@ def test_lattice_parameter_data_are_parsed():
     assert eq['phases']=={
         'FCC_A1' : {
             'status' : 'ENTERED',
-            'quantity' : 1.0
+            'value' : 1.0
         }
     }
     assert eq['components']==['CR']
@@ -257,7 +257,7 @@ def test_mg_ni_can_be_parsed():
     
 
 
-@pytest.mark.xfail
+
 def test_reference_states_are_parsed():
     """Test that reference state data can be parsed"""
     eq = convert_pop_data(POP_ACTIVITY)[0]
@@ -265,7 +265,7 @@ def test_reference_states_are_parsed():
     assert eq['conditions']['reference_states']['C'] == 'GRAPHITE'
 
 
-@pytest.mark.xfail
+
 def test_phase_status_can_be_fixed():
     """Test that the status of a phase can be fixed with a certain value"""
     eq = convert_pop_data(POP_ENTROPY)[0]
@@ -276,7 +276,7 @@ def test_phase_status_can_be_fixed():
     assert eq['phases']['CU2O']['hints']['value'] == 1.0
 
 
-@pytest.mark.xfail
+
 def test_phase_status_can_be_entered():
     """Test that the status of a phase can be entered with a certain value"""
     eq = convert_pop_data(POP_GIBBS_ENERGY)[0]

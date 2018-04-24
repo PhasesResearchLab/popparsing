@@ -155,11 +155,11 @@ def find_phases(data):
     for phase in phases:
         hints = {}
         #TODO: Ask about fixed vs. entered status implementation for pop_conversion.py
-        if type(phases[phase])==str:
-            hints['status'] = phases[phase]
+        if type(phases[phase][1])==str:
+            hints['status'] = phases[phase][1]
         else:
-            hints['status'] = 'ENTERED/FIXED'
-            hints['quantity'] = phases[phase]
+            hints['status'] = phases[phase][0]
+            hints['quantity'] = phases[phase][1]
         results[phase] = hints
     return results
     

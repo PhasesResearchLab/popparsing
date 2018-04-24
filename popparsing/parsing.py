@@ -197,12 +197,13 @@ def _process_phases(exp, status_type, phases, status):
     """
     if status_type != 'PHASE': _unimplemented()
     # TODO: fixed vs entered in implementation?
+    # Should we include suspended phases as well or not?
     if status[0] == 'FIXED' or status[0] == 'ENTERED' or status[0][:3] == 'DOR':
         existing_phases = exp.get("phases", {})
         if status[0][:3] == 'DOR':
             status = status.asList()
             status.append("DORMANT")
-        exp["phases"] = {phase: status[1] for phase in phases}
+        exp["phases"] = {phase: (status[0], status[1]) for phase in phases}
         for existing_phase in existing_phases:
             exp["phases"][existing_phase] = existing_phases[existing_phase]
     elif status[0] == 'SUSPENDED':

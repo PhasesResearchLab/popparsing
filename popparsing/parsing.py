@@ -75,7 +75,7 @@ def _pop_grammar():
     float_number = (Regex(r'[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?') | '0') \
         .setParseAction(lambda t: [float(t[0])])
     # symbol name, e.g., phase name or equilibrium name
-    symbol_name = Word(alphanums + '_:#', min=1)
+    symbol_name = Word(alphanums + '_:#*', min=1)
     equalities = Word('=') ^ Word('<') ^ Word('>')
     pm = oneOf('+ -')
     label = Word('@' + nums)
@@ -104,7 +104,7 @@ def _pop_grammar():
     cmd_table_values = POPCommand('TABLE_VALUES') + sCOMMA + Group(
         delimitedList(Group(OneOrMore(float_number)))) + Suppress(POPCommand('TABLE_END'))
     cmd_set_ref_state = POPCommand('SET_REFERENCE_STATE') + symbol_name + Optional(sCOMMA) + symbol_name + \
-        Optional(sCOMMA) + Optional(symbol_name | '*') + Optional(sCOMMA) + Optional(symbol_name | '*') + \
+        Optional(OneOrMore(symbol_name)) + \
         Optional(OneOrMore(sCOMMA))  # TODO: should these default values be handled?
     cmd_set_condition = POPCommand('SET_CONDITION') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))

@@ -103,8 +103,9 @@ def _pop_grammar():
     cmd_table_head = POPCommand('TABLE_HEAD') + int_number
     cmd_table_values = POPCommand('TABLE_VALUES') + sCOMMA + Group(
         delimitedList(Group(OneOrMore(float_number)))) + Suppress(POPCommand('TABLE_END'))
-    cmd_set_ref_state = POPCommand('SET_REFERENCE_STATE') + symbol_name + Optional(sCOMMA) + symbol_name + Optional(
-        OneOrMore(sCOMMA))  # TODO: should these default values be handled?
+    cmd_set_ref_state = POPCommand('SET_REFERENCE_STATE') + symbol_name + Optional(sCOMMA) + symbol_name + \
+        Optional(sCOMMA) + Optional(symbol_name | '*') + Optional(sCOMMA) + Optional(symbol_name | '*') + \
+        Optional(OneOrMore(sCOMMA))  # TODO: should these default values be handled?
     cmd_set_condition = POPCommand('SET_CONDITION') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_label = POPCommand('LABEL_DATA') + OneOrMore(Word(alphanums))

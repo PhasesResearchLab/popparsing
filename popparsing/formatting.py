@@ -205,7 +205,8 @@ def convert(data, symbols=None):
     #result['reference_states'] = find_reference_states(data)
     #result['reference_states'] = data['reference_states']
     result['outputs'], result['values'] = parse_experiments(data, symbols)
-    result['reference'] = data['label']
+    if 'label' in data:
+        result['reference'] = data['label']
     return result
     
 def convert_set(equilibria, symbols=None):

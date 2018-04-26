@@ -75,7 +75,7 @@ def _pop_grammar():
     float_number = (Regex(r'[-+]?[0-9]*\.?[0-9]+([eE][-+]?[0-9]+)?') | '0') \
         .setParseAction(lambda t: [float(t[0])])
     # symbol name, e.g., phase name or equilibrium name
-    symbol_name = Word(alphanums + '_:', min=1)
+    symbol_name = Word(alphanums + '_:#', min=1)
     equalities = Word('=') ^ Word('<') ^ Word('>')
     pm = oneOf('+ -')
     label = Word('@' + nums)
@@ -116,10 +116,11 @@ def _pop_grammar():
     cmd_start_value = POPCommand('SET_START_VALUE') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_save = POPCommand('SAVE_WORKSPACES')
+    cmd_set_weight = POPCommand('SET_WEIGHT') + symbol_name + Optional(OneOrMore(sCOMMA))
     return (
                cmd_equilibrium | cmd_change_status | cmd_en_symbol | cmd_table_head | cmd_table_values |
                cmd_set_ref_state | cmd_set_condition | cmd_label | cmd_alternate |
-               cmd_experiment_phase | cmd_start_value | cmd_save) + Optional(
+               cmd_experiment_phase | cmd_start_value | cmd_save | cmd_set_weight) + Optional(
         Suppress(';')) + stringEnd
 
 

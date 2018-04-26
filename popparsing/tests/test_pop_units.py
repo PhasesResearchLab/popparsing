@@ -293,7 +293,7 @@ def test_phase_status_can_be_entered():
 # CHANGE-STATUS PHASE CU2O=FIXED 1
 # should be true for all statuses
 
-@pytest.mark.xfail
+#@pytest.mark.xfail
 def test_data_from_parrot_can_be_parsed():
     """Test that data output from PARROT can be parsed"""
     result = convert_pop_data(POP_FROM_PARROT)

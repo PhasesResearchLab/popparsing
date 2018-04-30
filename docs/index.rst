@@ -6,8 +6,16 @@
 popparsing
 ==========
 
+
+
 Installation
 ------------
+
+Prerequisites for the popparsing package
+include the pyparsing and sympy packages
+
+To install, open up a terminal or
+command prompt and enter:
 
 ``pip install popparsing``
 

@@ -224,39 +224,28 @@ def test_lattice_parameter_data_are_parsed():
     assert eq['values']==[4.02]
     assert eq['reference']=='ALAT'
     
-#@pytest.mark.xfail
+
 def test_tables_are_parsed():
     """Test that data in tables can be parsed"""
     result = convert_pop_data(POP_TABLE_X_HMR)
     assert len(result)==1
-    return
-    eq = result[0]
-    eq['phases']!=None
-    eq['components']!=None
-    eq['conditions']!=None
-    eq['outputs']!=None
-    eq['values']!=None
-    eq['reference']!=None
+    assert len(result[0]['conditions']['X(Ti)'])==6
+    assert len(result[0]['values'][0])==6
 
-#@pytest.mark.xfail
+
 def test_tables_with_exp_first_are_parsed():
     """Test that tables with experimental data in the first column can be parsed"""
     result = convert_pop_data(POP_TABLE_EXPERIMENT_FIRST_COLUMN)
     assert len(result)==1
-    return
-    eq['phases']!=None
-    eq['components']!=None
-    eq['conditions']!=None
-    eq['outputs']!=None
-    eq['values']!=None
-    eq['reference']!=None
+    assert result[0]['values'][0]==[0.0, 0.0045, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.15, 0.2, 0.3]
 
-#@pytest.mark.xfail
+
 def test_mg_ni_can_be_parsed():
     """Test that the (modified working) Mg-Ni file can be parsed"""
     result = convert_pop_data(WORKING_MG_NI_POP)
-    
-
+    assert len(result)==13
+    assert result[0]['conditions']['P']==100000
+    assert result[0]['phases']['LIQ']['status']=='FIXED'
 
 
 def test_reference_states_are_parsed():
@@ -284,7 +273,6 @@ def test_phase_status_can_be_entered():
     assert eq['phases']['SPINEL']['status'] == 'ENTERED'
     assert eq['phases']['FCC']['status'] == 'DORMANT'
     assert eq['phases']['O2GAS']['status'] == 'DORMANT'
-
     assert eq['phases']['SPINEL']['value'] == 1.0
 
 # TODO: write similar tests for DORMANT and SUSPENDED
@@ -293,7 +281,6 @@ def test_phase_status_can_be_entered():
 # CHANGE-STATUS PHASE CU2O=FIXED 1
 # should be true for all statuses
 
-#@pytest.mark.xfail
 def test_data_from_parrot_can_be_parsed():
     """Test that data output from PARROT can be parsed"""
     result = convert_pop_data(POP_FROM_PARROT)

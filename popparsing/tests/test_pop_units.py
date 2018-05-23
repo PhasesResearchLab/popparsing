@@ -6,223 +6,69 @@ import pytest
 
 from ..conversion import convert_pop_data
 from .testing_data import *
+from .testing_results import *
 
 def match_lists(lst1, lst2):
-    return sorted(lst1)==sorted(lst2)
-
+    assert sorted(lst1)==sorted(lst2)
+    return True
+    
+def match_eq(dict1, dict2):
+    assert match_lists(dict1['components'], dict2['components'])
+    keys = ['phases', 'conditions', 
+            'outputs', 'values', 'reference']
+    for k in keys:
+        assert dict1[k]==dict2[k]
+    return True
+    
+def match_sets(lst1, lst2):
+    assert len(lst1)==len(lst2)
+    for i in range(len(lst1)):
+        assert match_eq(lst1[i], lst2[i])
+    return True
 
 def test_activity_data_are_parsed():
     """Test that activity data can be parsed"""
     results = convert_pop_data(POP_ACTIVITY)
-    assert len(results)==1
-    eq = results[0]
-    assert eq['phases']=={
-        'FCC_A1' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        },
-        'GRAPHITE': {
-            'status' : 'DORMANT'
-        }
-        
-    }
-    components = ['C', 'MN']
-    assert match_lists(eq['components'], components)==True
-    assert eq['conditions'] == {
-        'P' : 101325,
-        'T' : 1273,
-        'X(MN)' : 0.03,
-        'X(C)' : 0.03,
-        'reference_states' : {
-            'C' : 'GRAPHITE'
-        }
-    }
-    assert eq['outputs']==['ACR(C)']
-    assert eq['values']==[0.29]
-    assert eq['reference']=='ACTI'
+    assert match_sets(results, POP_ACTIVITY_RESULTS)
 
 
 def test_driving_force_data_are_parsed():
     """Test that driving force data can be parsed"""
+    #Does HCP go in the phases dictionary as well?
     result = convert_pop_data(POP_DRIVING_FORCE)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'ORT' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        },
-        'DEL' : {
-            'status' : 'DORMANT'
-        },
-        #Does HCP go in here as well?
-        #'HCP' : {
-        #    'status' : 'SUSPENDED'
-        #}
-    }
-    components = ['Ti', 'U']
-    assert match_lists(eq['components'], components)==True
-    assert eq['conditions']=={
-        'P' : 102325,
-        'T' : 673,
-        'X(Ti)' : 0.03,
-        'reference_states' : {
-            #Does HCP go in the phases dictionary as well?
-            'Ti' : 'HCP',
-            'U' : 'ORT'
-        }
-    }
-    outputs = ['DGMR(ORT)', 'DGMR(DEL)']
-    values = [{ 'equality' : '>', 'value' : 0.0},
-              { 'equality' : '<', 'value' : 0.0}]
-    assert eq['outputs']==outputs
-    assert eq['values']==values
-    assert eq['reference']=='ADRIV'
+    assert match_sets(result, POP_DRIVING_FORCE_RESULTS)
     
 
 def test_entropy_data_are_parsed():
     """Test that entropy data can be parsed"""
+    #Do we want to omit empty dictionaries
     result = convert_pop_data(POP_ENTROPY)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'CU2O' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        },
-        'CUO' : {
-            'status' : 'FIXED',
-            'value' : 0.0
-        }
-    }
-    assert eq['components']==['C']
-    assert eq['conditions']=={
-        'P' : 101325,
-        'T' : 298.15,
-        #Do we want to omit empty dictionaries
-        'reference_states' : {}
-    }
-    assert eq['outputs']==['S', 'ACR(C)']
-    assert eq['values']==[92.36, 0.29]
-    assert eq['reference']=='AENT'
+    assert match_sets(result, POP_ENTROPY_RESULTS)
 
 
 def test_eutectoid_data_are_parsed():
     """Test that three phase equilibria data can be parsed"""
-    result = convert_pop_data(POP_EUTECTOID)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'BCC' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        },
-        'HCP' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        },
-        'DEL' : {
-            'status' : 'FIXED',
-            'value' : 1.0
-        }
-    }
-    assert eq['components']==['Ti']
     #Do alternate conditions also have to be in here?
-    assert eq['conditions']=={
-        'P' : 102325,
-        #'X(HCP, Ti)' : 0.99
-        #'X(DEL, Ti)' : 0.33
-        #Do we want to omit empty dictionaries
-        'reference_states' : {}
-    }
-    assert eq['outputs']==['T', 'X(BCC,Ti)', 'X(HCP,Ti)', 'X(DEL,Ti)']
-    assert eq['values']==[928, 0.85, 0.99, 0.33]
-    assert eq['reference']=='AEUO'
+    result = convert_pop_data(POP_EUTECTOID)
+    assert match_sets(result, POP_EUTECTOID_RESULTS)
 
 
 def test_gibbs_energy_data_are_parsed():
     """Test that Gibbs energy data can be parsed"""
     result = convert_pop_data(POP_GIBBS_ENERGY)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'SPINEL' : {
-            'status' : 'ENTERED',
-            'value' : 1.0
-        },
-        'FCC' : {
-            'status' : 'DORMANT'
-        },
-        'O2GAS' : {
-            'status' : 'DORMANT'
-        }
-    }
-    components = ['O', 'NI', 'AL']
-    assert match_lists(eq['components'], components)==True
-    assert eq['conditions']=={
-        'P' : 101325,
-        'T' : 1000,
-        'N(NI)' : 1,
-        'N(AL)' : 2,
-        'N(O)' : 4,
-        'reference_states' : {
-            'NI' : 'FCC',
-            'AL' : 'FCC',
-            'O' : 'O2GAS'
-        }
-    }
-    assert eq['outputs']==['GM']
-    assert eq['values']==[-298911]
-    assert eq['reference']=='AGEN'
+    assert match_sets(result, POP_GIBBS_ENERGY_RESULTS)
 
 
 def test_heat_capacity_data_are_parsed():
     """Test that heat capacity data can be parsed"""
     result = convert_pop_data(POP_HEAT_CAPACITY)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'SPINEL' : {
-            'status' : 'ENTERED',
-            'value' : 1.0
-        }
-    }
-    assert match_lists(eq['components'],['FE', 'MG', 'O'])==True
-    assert eq['conditions']=={
-        'P' : 101325,
-        'N(FE)' : 2,
-        'N(MG)' : 1,
-        'N(O)' : 4,
-        'T' : 800,
-        'reference_states' : {}
-    }
-    assert eq['outputs']==['CP']
-    assert eq['values']==[207]
-    assert eq['reference']=='ACP'
+    assert match_sets(result, POP_HEAT_CAPACITY_RESULTS)
 
 
 def test_lattice_parameter_data_are_parsed():
     """Test that lattice parameter data can be parsed"""
     result = convert_pop_data(POP_LATTICE_PARAMETER)
-    assert len(result)==1
-    eq = result[0]
-    assert eq['phases']=={
-        'FCC_A1' : {
-            'status' : 'ENTERED',
-            'value' : 1.0
-        }
-    }
-    assert eq['components']==['CR']
-    assert eq['conditions']=={
-        'P' : 101325,
-        'N' : 1,
-        'T' : 298.15,
-        'X(CR)' : 0.05,
-        'reference_states' : {}
-    }
-    assert eq['outputs']==['LPFCC']
-    assert eq['values']==[4.02]
-    assert eq['reference']=='ALAT'
+    assert match_sets(result, POP_LATTICE_PARAMETER_RESULTS)
     
 
 def test_tables_are_parsed():

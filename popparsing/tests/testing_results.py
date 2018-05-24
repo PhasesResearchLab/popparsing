@@ -179,31 +179,404 @@ POP_LATTICE_PARAMETER_RESULTS=[{
     'reference' : 'ALAT'
 }]
 
-'''
+
 POP_TABLE_X_HMR_RESULTS=[{
     'phases' : {
+        'BCC_A2' : {
+            'status' : 'FIXED',
+            'value' : 1.0
+        }
     },
-    'components' : [],
+    'components' : ['U', 'Ti'],
     'conditions' : {
+        'P' : 102325,
+        'T' : 200,
+        'X(Ti)' : [ 0.1, 0.2, 0.3,
+                    0.4, 0.5, 0.6],
+        'reference_states' : {
+            'U' : 'BCC_A2',
+            'Ti' : 'BCC_A2'
+        }
     },
-    'outputs' : [],
-    'values' : [],
-    'reference' : 
+    'outputs' : ['HMR(BCC_A2)'],
+    'values' : [ [2450, 3000, 2990, 2430, 1400, -65] ],
+    'reference' : 'AHMR1'
 }]
 
 POP_TABLE_EXPERIMENT_FIRST_COLUMN_RESULTS=[{
     'phases' : {
+        'LIQUID' : {
+            'status' : 'FIXED',
+            'value' : 1.0
+        },
+        'BCC' : {
+            'status' : 'FIXED',
+            'value' : 0.0
+        }
     },
-    'components' : [],
+    'components' : ['Ti'],
     'conditions' : {
+        'P' : 102325,
+        'T' : [ 1406, 1420, 1445, 1446, 1495, 1563,
+                1643, 1957, 2093, 2117, 2198],
+        'reference_states' : {}
     },
-    'outputs' : [],
-    'values' : [],
-    'reference' : 
+    'outputs' : ['X(LIQUID,Ti)'],
+    'values' : [[0.0, 0.0045, 0.01, 0.02, 0.03, 0.04,
+                 0.05, 0.1, 0.15, 0.2, 0.3 ]],
+    'reference' : 'AREV'
 }]
 
-WORKING_MG_NI_POP_RESULTS=[]
+WORKING_MG_NI_POP_RESULTS=[
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI', 'MG'],
+        'conditions' : {
+            'T' : 1073,
+            'P' : 100000,
+            'X(NI)' : [
+                0.20230, 0.22600, 0.25400,
+                0.28390, 0.18470, 0.20840,
+                0.23580, 0.25950, 0.28900,
+                0.21590, 0.24690, 0.28040,
+                0.19450, 0.22560, 0.25880,
+                0.28950, 0.32410, 0.15000,
+                0.17210, 0.19280, 0.21300,
+                0.23170, 0.25270, 0.27040,
+                0.29050, 0.31020, 0.34380
+            ],
+            'reference_states' : {
+                'MG' : 'LIQ'
+            }
+        },
+        'outputs' : ['ACR(MG)'],
+        'values' : [[
+            0.771, 0.722, 0.672,
+            0.623, 0.746, 0.710,
+            0.667, 0.626, 0.570,
+            0.709, 0.656, 0.600,
+            0.740, 0.681, 0.635,
+            0.577, 0.519, 0.822,
+            0.787, 0.748, 0.708,
+            0.678, 0.640, 0.607,
+            0.577, 0.550, 0.506
+        ]],
+        'reference' : 'ALA1'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['MG', 'NI'],
+        'conditions' : {
+            'T' : 1005,
+            'P' : 100000,
+            'X(NI)' : [
+                0.04800, 0.10200, 0.15300,
+                0.05300, 0.09900, 0.14600,
+                0.19400, 0.02700, 0.05600,
+                0.08500, 0.05100, 0.10500,
+                0.15700
+            ],
+            'reference_states' : {
+                'MG' : 'LIQ',
+                'NI' : 'LIQ'
+            }
+        },
+        'outputs' : ['HMRT'],
+        'values' : [[
+            -2.880, -5.780, -8.010,
+            -3.080, -5.490, -7.330,
+            -9.170, -1.620, -3.200,
+            -4.620, -3.220, -5.820,
+            -7.940
+        ]],
+        'reference' : 'ALA2'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['MG', 'NI'],
+        'conditions' : {
+            'T' : 1005,
+            'P' : 100000,
+            'X(NI)' : [
+                0.02400, 0.07500, 0.12800,
+                0.02700, 0.07600, 0.12200,
+                0.17000, 0.01300, 0.04100,
+                0.07000, 0.02500, 0.07800,
+                0.13100
+            ],
+            'reference_states' : {
+                'MG' : 'LIQ',
+                'NI' : 'LIQ'
+            }
+        },
+        'outputs' : ['PH1'],
+        'values' : [[
+            -60.360, -53.410, -44.960,
+            -57.860, -52.630, -41.420,
+            -39.540, -61.030, -54.390,
+            -48.550, -63.440, -48.580,
+            -42.170
+        ]],
+        'reference' : 'ALA3'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'HCP_A3' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'T' : [ 900.7, 869.4, 836.8, 812.1, 781.0 ],
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['X(LIQ,NI)', 'X(HCP_A3,NI)'],
+        'values' : [[ 0.0235, 0.052, 0.0741, 0.0938, 0.1129 ], 
+                    { 'equality' : '<', 'value' : 0.01 }],
+        'reference' : 'ALHC'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'FCC' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'T' : [ 1428, 1545, 1708 ],
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['X(LIQ,NI)', 'X(FCC,NI)'],
+        'values' : [[ 0.8265, 0.8872, 0.9762 ], 
+                    { 'equality' : '>', 'value' : 0.98 }],
+        'reference' : 'ALFC'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MGNI2' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'FCC' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : [ 'T', 'X(LIQ,NI)' ],
+        'values' : [ 1370, 0.803 ],
+        'reference' : 'AIEU'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MGNI2' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'X(LIQ,NI)' : [ 0.3004, 0.3298, 0.3388, 0.3832,
+                            0.4347, 0.4914, 0.5540, 0.6236,
+                            0.6536, 0.7012, 0.7349 ],
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['T'],
+        'values' : [[ 1054.4, 1140.4, 1163.9, 1345, 1385, 
+                      1412, 1418, 1417, 1418, 1413, 1370 ]],
+        'reference' : 'ALM2'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MGNI2' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : [ 'T', 'X(LIQ,NI)' ],
+        'values' : [ 1033, 0.29 ],
+        'reference' : 'APER'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'HCP_A3' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : [ 'T', 'X(LIQ,NI)' ],
+        'values' : [ 779, 0.113 ],
+        'reference' : 'AEMG'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'X(LIQ,NI)' : [ 0.1236, 0.1393, 0.1563,
+                            0.1836, 0.2192, 0.2395,
+                            0.2662 ],
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['T'],
+        'values' : [[ 834.2, 879.9, 917.6, 960.6,
+                      994.5, 1012.7, 1023.2 ]],
+        'reference' : 'AM2N'
+    },
+    {
+        'phases' : {
+            'FCC' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MGNI2' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MG2NI' : {
+                'status' : 'DORMANT'
+            }
+        },
+        'components' : [],
+        'conditions' : {
+            'T' : list(range(1300, 100, -100)),
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['DGM(MG2NI)'],
+        'values' : [ { 'equality' : '<', 'value' : 0 } ],
+        'reference' : 'AST1'
+    },
+    {
+        'phases' : {
+            'HCP_A3' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            },
+            'MGNI2' : {
+                'status' : 'DORMANT'
+            }
+        },
+        'components' : [],
+        'conditions' : {
+            'T' : list(range(700, 100, -100)),
+            'P' : 100000,
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['DGM(MGNI2)'],
+        'values' : [{ 'equality' : '<', 'value' : 0 }],
+        'reference' : 'AST2'
+    },
+    {
+        'phases' : {
+            'LIQ' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['NI'],
+        'conditions' : {
+            'T' : 2500,
+            'P' : 100000,
+            'X(NI)' : [ (x+1) / 10 for x in range(9) ],
+            'reference_states' : {
+            }
+        },
+        'outputs' : ['GLDD'],
+        'values' : [ { 'equality' : '>', 'value' : 0 } ],
+        'reference' : 'ALDD'
+    }
+]
 
+'''
 POP_FROM_PARROT_RESULTS=[]
 
 POP_COMPLEX_CONDITIONS_RESULTS=[]

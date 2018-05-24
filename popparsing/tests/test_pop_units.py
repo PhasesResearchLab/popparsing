@@ -69,29 +69,25 @@ def test_lattice_parameter_data_are_parsed():
     """Test that lattice parameter data can be parsed"""
     result = convert_pop_data(POP_LATTICE_PARAMETER)
     assert match_sets(result, POP_LATTICE_PARAMETER_RESULTS)
+    result = convert_pop_data(POP_LATTICE_PARAMETER_ABBREVIATED_EXPERIMENT)
+    assert match_sets(result, POP_LATTICE_PARAMETER_RESULTS)
     
 
 def test_tables_are_parsed():
     """Test that data in tables can be parsed"""
     result = convert_pop_data(POP_TABLE_X_HMR)
-    assert len(result)==1
-    assert len(result[0]['conditions']['X(Ti)'])==6
-    assert len(result[0]['values'][0])==6
+    assert match_sets(result, POP_TABLE_X_HMR_RESULTS)
 
 
 def test_tables_with_exp_first_are_parsed():
     """Test that tables with experimental data in the first column can be parsed"""
     result = convert_pop_data(POP_TABLE_EXPERIMENT_FIRST_COLUMN)
-    assert len(result)==1
-    assert result[0]['values'][0]==[0.0, 0.0045, 0.01, 0.02, 0.03, 0.04, 0.05, 0.1, 0.15, 0.2, 0.3]
-
+    match_sets(result, POP_TABLE_EXPERIMENT_FIRST_COLUMN_RESULTS)
 
 def test_mg_ni_can_be_parsed():
     """Test that the (modified working) Mg-Ni file can be parsed"""
     result = convert_pop_data(WORKING_MG_NI_POP)
-    assert len(result)==13
-    assert result[0]['conditions']['P']==100000
-    assert result[0]['phases']['LIQ']['status']=='FIXED'
+    assert match_sets(result, WORKING_MG_NI_POP_RESULTS)
 
 
 def test_reference_states_are_parsed():
@@ -130,6 +126,7 @@ def test_phase_status_can_be_entered():
 def test_data_from_parrot_can_be_parsed():
     """Test that data output from PARROT can be parsed"""
     result = convert_pop_data(POP_FROM_PARROT)
+    #assert match_sets(result, POP_FROM_PARROT_RESULTS)
 
 
 @pytest.mark.xfail

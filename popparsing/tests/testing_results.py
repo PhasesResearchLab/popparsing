@@ -576,19 +576,114 @@ WORKING_MG_NI_POP_RESULTS=[
     }
 ]
 
-'''
-POP_FROM_PARROT_RESULTS=[]
 
-POP_COMPLEX_CONDITIONS_RESULTS=[]
-
-POP_CONDITION_EXPRESSIONS_RESULTS=[{
+POP_FROM_PARROT_RESULTS=[{
     'phases' : {
+        'TETRAG_AD#1' : {
+            'status' : 'DORMANT'
+        },
+        'DELTA' : {
+            'status' : 'FIXED',
+            'value' : 0.0
+        },
+        'HCP_A3' : {
+            'status' : 'FIXED',
+            'value' : 1.0
+        }
     },
-    'components' : [],
+    #Note: Change status component not implemented yet
+    'components' : ['NP', 'ZR', #VA
+                    ],
     'conditions' : {
+        'P' : 102325,
+        'T' : 573,
+        'reference_states' : {
+            'NP' : 'ORTHO_AC',
+            'ZR' : 'HCP_A3'
+        }
     },
-    'outputs' : [],
-    'values' : [],
-    'reference' : 
+    'outputs' : ['X(HCP_A3,ZR)','DGMR(TETRAG_AD#1)'],
+    'values' : [ 0.988, { 'equality' : '<', 'value' : 0 }]
 }]
-'''
+
+POP_CONDITION_EXPRESSIONS_RESULTS=[
+    {
+        'phases' : {
+            'MGNI2' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['MG'],
+        'conditions' : {
+            'P' : 101325,
+            'T' : 298.15,
+            '3*X(MG)' : 1
+        },
+        'outputs' : ['H'],
+        'values' : [-59000],
+        'reference' : 'AENF' 
+    },
+    {
+        'phases' : {
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['MG'],
+        'conditions' : {
+            'P' : 101325,
+            'T' : 298.15,
+            '3*X(MG)' : 2
+        },
+        'outputs' : ['H'],
+        'values' : [-40000],
+        'reference' : 'AENF'
+    },
+    {
+        'phases' : {
+            'MG2NI' : {
+                'status' : 'FIXED',
+                'value' : 1.0
+            }
+        },
+        'components' : ['MG'],
+        'conditions' : {
+            'T' : list(range(335, 705, 10)),
+            'P' : 101325,
+            '3*X(MG)' : 2
+        },
+        'outputs' : ['CPM2N'],
+        'values' : [[ 70.68, 71.25, 71.64, 71.94, 72.81,
+                      72.99, 73.17, 73.68, 74.16, 74.46,
+                      74.52, 75.15, 75.12, 75.27, 75.36,
+                      75.93, 76.26, 76.23, 76.74, 76.86,
+                      76.80, 76.83, 77.19, 77.43, 77.49,
+                      77.79, 78.09, 78.21, 78.57, 78.63,
+                      78.45, 79.08, 78.99, 79.20, 79.56,
+                      79.62 ]],
+        'reference' : 'AM2C'
+    },
+]
+
+POP_COMPLEX_CONDITIONS_RESULTS=[{
+    'phases' : {
+        'LIQ' : {
+            'status' : 'FIXED',
+            'value' : 1.0
+        },
+        'MGNI2' : {
+            'status' : 'FIXED',
+            'value' : 1.0
+        }
+    },
+    'components' : ['MG'],
+    'conditions' : {
+        'P' : 101325,
+        'X(LIQ,MG)-X(MGNI2,MG)' : 0
+    },
+    'outputs' : ['T'],
+    'values' : [1420],
+    'reference' : 'ACM'
+}]

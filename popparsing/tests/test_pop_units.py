@@ -17,7 +17,8 @@ def match_eq(dict1, dict2):
     keys = ['phases', 'conditions', 
             'outputs', 'values', 'reference']
     for k in keys:
-        assert dict1[k]==dict2[k]
+        if k in dict1 and k in dict2:
+            assert dict1[k]==dict2[k]
     return True
     
 def match_sets(lst1, lst2):
@@ -126,16 +127,18 @@ def test_phase_status_can_be_entered():
 def test_data_from_parrot_can_be_parsed():
     """Test that data output from PARROT can be parsed"""
     result = convert_pop_data(POP_FROM_PARROT)
-    #assert match_sets(result, POP_FROM_PARROT_RESULTS)
+    assert match_sets(result, POP_FROM_PARROT_RESULTS)
 
 
 @pytest.mark.xfail
 def test_complex_conditions_can_be_parsed():
     """Conditions where constitutions are subtracted can be parsed"""
     result = convert_pop_data(POP_COMPLEX_CONDITIONS)
+    assert match_sets(result, POP_COMPLEX_CONDITIONS_RESULTS)
 
 
 @pytest.mark.xfail
 def test_expressions_as_conditions_can_be_parsed():
     """Conditions where constitutions are subtracted can be parsed"""
     result = convert_pop_data(POP_CONDITION_EXPRESSIONS)
+    assert match_sets(result, POP_CONDITION_EXPRESSIONS_RESULTS)

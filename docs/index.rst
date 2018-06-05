@@ -32,23 +32,81 @@ to write to.
 Input
 -----
 
-The popparsing package supports POP files with the following commands:
+The popparsing package supports POP files with the following commands below.
 
-+---------------------------+
-|Command                    |
-+===========================+
-|``CREATE_NEW_EQUILIBRIUM`` |
-+---------------------------+
-|``CHANGE_STATUS PHASE``    |
-+---------------------------+
-|``SET_REFERENCE_STATE``    |
-+---------------------------+
-|``SET_CONDITION``          |
-+---------------------------+
-|``TABLE_VALUES``           |
-+---------------------------+
-|``TABLE_END``              |
-+---------------------------+
+CHANGE_STATUS PHASE
+^^^^^^^^^^^^^^^^^^^
+
+The ``CHANGE_STATUS PHASE`` command must have two arguments separated by an '='.
+The first argument to the left of the equal sign is a list of phase names
+separated by commas or spaces.  The second argument is either just a status string or
+both a status string and a floating point value separated by a space.  A supported abbreviation
+of the command is ``CH P``.  Status phase names ``FIXED``, ``DORMANT``, and ``ENTERED`` are supported
+and can be abbreviated to any shorter length.  However, phase names abbreviations are 
+currently not supported and must be typed exactly how it should appear on the equilibrium data set.
+
+Valid Examples:
+
+.. code-block:: yaml
+
+    CHANGE_STATUS PHASE BCC HCP DEL=DORMANT
+    CHANGE_STATUS PHASE BCC HCP DEL=FIXED 1
+    CHANGE_STATUS PHASE BCC,HCP,DEL=FIXED 1
+    CHANGE_STATUS PHASE BCC,HCP,DEL=FIX 1
+    CHANGE_STATUS PHASE BCC, HCP, DEL = FIX 1
+    CHANGE_STATUS PHASE BCC HCP DEL = FIX 1
+    CH P BCC HCP DEL=F 1
+
+CREATE_NEW_EQUILIBRIUM
+^^^^^^^^^^^^^^^^^^^^^^
+
+The ``CREATE_NEW_EQUILIBRIUM`` command must have two arguments.  The first
+argument is unused by the pop file parser.  The second argument is an integer, which
+is an initialization code that tells the parser how to initialize the equilibrium set.
+A supported abbreviated version of the command is ``C-N``.  
+
+Valid Examples:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM 108, 1
+    CREATE_NEW_EQUILIBRIUM 108,1
+    CREATE_NEW_EQUILIBRIUM 108 1
+    C-N 108 1
+
+Note: Only initialization code 1 is supported at the moment.
+
+ENTER_SYMBOL CONSTANT
+^^^^^^^^^^^^^^^^^^^^^
+
+EXPERIMENT
+^^^^^^^^^^
+
+SET_CONDITION
+^^^^^^^^^^^^^
+
+SET_REFERENCE_STATE
+^^^^^^^^^^^^^^^^^^^
+
+The ``SET_REFERENCE_STATE`` command must have at least two arguments: 
+the component name and the phase name respectively separated by either
+comma or space.  The pop file parser does support additional arguments
+after the first two, but currently, those arguments will not affect 
+the output data.  The supported abbreviation of the command is ``S-R-S``.
+
+Valid Examples:
+
+.. code-block:: yaml
+
+    SET_REFERENCE_STATE U BCC_A2,,,,,,
+    SET_REFERENCE_STATE U,BCC_A2,,,,,,
+    SET_REFERENCE_STATE U BCC_A2
+    SET_REFERENCE_STATE U, BCC_A2
+    SET_REFERENCE_STATE U BCC_A2 * 100000
+    S-R-S U BCC_A2
+
+TABLE_VALUES and TABLE_END
+^^^^^^^^^^^^^^^^^^^^^^^^^^
 
 Output
 ------

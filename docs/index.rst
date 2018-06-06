@@ -10,32 +10,73 @@ popparsing
 The popparsing package is used to turn a file with POP commands into
 a JSON file that contains all information about each equilibrium set
 
-Installation
-============
+Installation and Usage
+======================
 
 Prerequisites for the popparsing package
-include the pyparsing and sympy packages
-
+include the **pyparsing** and **sympy** packages.
 To install, open up a terminal or
-command prompt and enter:
-
-``pip install popparsing``
-
-Usage
-=====
-
+command prompt and enter ``pip install popparsing``.
 To generate a JSON file from a POP file, enter in the command prompt 
-``popparsing [input_file.pop] [output_file.json]`` where input_file.pop is 
-a file with POP commands and extension .pop and output_file.json is the json file
+``popparsing [input_file.pop] [output_file.json]`` where ``input_file.pop`` is 
+a file with POP commands and extension .pop and ``output_file.json`` is the json file
 to write to.
 
 Input
------
+=====
 
 The popparsing package supports POP files with the following commands below.
+The subsequent subsections are details of supported syntaxes 
+of **only commands that affect the output of the pop file parser**.
+
++--------------------------+---------------------------+
+|                 Affects the output?                  |
++--------------------------+---------------------------+
+|           YES            |             NO            |
++==========================+===========================+
+|``CHANGE_STATUS PHASE``   |``ADVANCED_OPTIONS``       |
++--------------------------+---------------------------+
+|``CREATE_NEW_EQUILIBRIUM``|``CHANGE_STATUS COMPONENT``|
++--------------------------+---------------------------+
+|``ENTER_SYMBOL CONSTANT`` |``COMMENT``                |
++--------------------------+---------------------------+
+|``EXPERIMENT``            |``DEFINE_COMPONENTS``      |
++--------------------------+---------------------------+
+|``LABEL_DATA``            |``ENTER_SYMBOL FUNCTION``  |
++--------------------------+---------------------------+
+|``SET_CONDITION``         |``ENTER_SYMBOL TABLE``     |
++--------------------------+---------------------------+
+|``SET_REFERENCE_STATE``   |``EVALUATE_FUNCTIONS``     |
++--------------------------+---------------------------+
+|``TABLE_END``             |``EXPORT``                 |
++--------------------------+---------------------------+
+|``TABLE_VALUES``          |``EXTERNAL``               |
++--------------------------+---------------------------+
+|                          |``FLUSH_BUFFER``           |
++--------------------------+---------------------------+
+|                          |``IMPORT``                 |
++--------------------------+---------------------------+
+|                          |``SAVE``                   |
++--------------------------+---------------------------+
+|                          |``SAVE_WORKSPACE``         |
++--------------------------+---------------------------+
+|                          |``SAVE_WORKSPACES``        |
++--------------------------+---------------------------+
+|                          |``SET_ALL_START_VALUES``   |
++--------------------------+---------------------------+
+|                          |``SET_ALTERNATE_CONDITION``|
++--------------------------+---------------------------+
+|                          |``SET_NUMERICAL_LIMITS``   |
++--------------------------+---------------------------+
+|                          |``SET_START_VALUE``        |
++--------------------------+---------------------------+
+|                          |``SET_WEIGHT``             |
++--------------------------+---------------------------+
+|                          |``TABLE_HEAD``             |
++--------------------------+---------------------------+
 
 CHANGE_STATUS PHASE
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 The ``CHANGE_STATUS PHASE`` command must have two arguments separated by an '='.
 The first argument to the left of the equal sign is a list of phase names
@@ -58,7 +99,7 @@ Valid Examples:
     CH P BCC HCP DEL=F 1
 
 CREATE_NEW_EQUILIBRIUM
-^^^^^^^^^^^^^^^^^^^^^^
+----------------------
 
 The ``CREATE_NEW_EQUILIBRIUM`` command must have two arguments.  The first
 argument is unused by the pop file parser.  The second argument is an integer, which
@@ -77,16 +118,86 @@ Valid Examples:
 Note: Only initialization code 1 is supported at the moment.
 
 ENTER_SYMBOL CONSTANT
-^^^^^^^^^^^^^^^^^^^^^
+---------------------
+
+The ``ENTER_SYMBOL CONSTANT`` command has one or multiple arguments separated by
+either space or commas.  Each argument has the same syntax and assigns a constant 
+value to a variable name, with the variable name to the left of the equal sign and
+the numerical value to the right.  There must be no space between the variable name
+and the equal sign or between the equal sign and the numerical value for each argument.
+The supported abbreviation of the command is ``E-SYM CON``.
+
+Valid Examples:
+
+.. code-block:: yaml
+
+    ENTER_SYMBOL CONSTANT P0=1E5 R0=8.314
+    ENTER_SYMBOL CONSTANT P0=1E5,R0=8.314
+    E-SYM CON P0=1E5 R0=8.314
 
 EXPERIMENT
-^^^^^^^^^^
+----------
+
+The ``EXPERIMENT`` command has one or more arguments separated by 
+spaces or commas.  The arguments only have one specific syntax with four parts in a specific order.
+The first part is the variable name, and the second part is either an '=', '<', or '>'.  The third
+part is either a numerical value or an '@' followed by an integer indicating the column number of the table
+created by the TABLE_VALUES command the property or variable name corresponds to. (See :ref:`table_values` for 
+more details) Finally, a ':' and a numerical value representing the error is placed after.  
+The error value can optionally be followed by a % sign.  A supported abbreviation of the command is ``EXP``.
+
+Valid Examples:
+
+.. code-block:: yaml
+
+    $ Note: '@2' indicates that ACR(MG)
+    $ corresponds to a list of values in the second column of
+    $ the created table.
+    EXPERIMENT ACR(MG)=@2:5% X(HCP_A3,ZR)=0.988:1E-2
+    EXPERIMENT ACR(MG)=@2:5%,X(HCP_A3,ZR)=0.988:1E-2
+    EXPERIMENT T=1370:2
+    EXPERIMENT X(LIQ,NI)=0.803:5%
+
+Note: The error value after the colon representing the is
+is currently not included in the output, but both the colon 
+and error value are necessary parts of the syntax.
+
+LABEL_DATA
+----------
+
+The ``LABEL_DATA`` command has one argument which is just a string with
+alphanumeric characters.  It is common to use the abbreviated version, ``LABEL``.
+
+Examples: 
+
+.. code-block:: yaml
+
+    LABEL_DATA AHMR1
+    LABEL ACP
 
 SET_CONDITION
-^^^^^^^^^^^^^
+-------------
+
+The ``SET_CONDITION`` command has one or more arguments separated by commas
+or spaces.  Each argument has the same specific syntax: a variable or property
+name, followed by an '=' sign, and then either a numerical value or an '@' followed
+by an integer indicating the table column number the property or variable corresponds to.
+(See :ref:`table_values` for details)  The supported abbreviation for the command is ``S-C``.
+
+.. code-block:: yaml
+
+    $ Note: '@1' indicates that X(NI)
+    $ corresponds to a list of values in the first column of
+    $ the created table.
+    SET_CONDITION T=1073 P=P0 X(NI)=@1
+    SET_CONDITION T=1073,P=P0,X(NI)=@1
+    SET_CONDITION T=1073, P=P0, X(NI)=@1
+    $ Temperature variable corresponds to a list of values 
+    $ on the second colun of the created table
+    S-C T=@2
 
 SET_REFERENCE_STATE
-^^^^^^^^^^^^^^^^^^^
+-------------------
 
 The ``SET_REFERENCE_STATE`` command must have at least two arguments: 
 the component name and the phase name respectively separated by either
@@ -105,14 +216,47 @@ Valid Examples:
     SET_REFERENCE_STATE U BCC_A2 * 100000
     S-R-S U BCC_A2
 
+.. _table_values:
+
 TABLE_VALUES and TABLE_END
-^^^^^^^^^^^^^^^^^^^^^^^^^^
+--------------------------
+
+The ``TABLE_VALUES`` command marks the start of the table while 
+the ``TABLE_END`` command marks the end of it.  Each line between
+the two commands must contain the same number of numerical values, or in
+other words, each column in the constructed table must have the same number of
+elements.  Additionally, these entered values are separated by spaces.  
+The number of spaces before and after each numerical value is irrelevant.
+These values will be used by variables that are assigned with an '@' followed
+by an integer indicating which column of values in the table will be used.
+
+Example:
+
+.. code-block:: yaml
+
+    $The values on the first column correspond to X(LIQUID,Ti)
+    $The values on the second column correspond to temperature(T).
+    SET_CONDITION T=@2
+    EXPERIMENT X(LIQUID,Ti)=@1:0.01
+    TABLE_VALUES
+    0.00          1406
+    0.0045        1420
+    0.01          1445
+    0.02          1446
+    0.03          1495
+    0.04          1563
+    0.05          1643
+    0.10          1957
+    0.15          2093
+    0.20          2117
+    0.30          2198
+    TABLE_END
 
 Output
-------
+======
 
 Main Equilibrium Dictionary
-^^^^^^^^^^^^^^^^^^^^^^^^^^^
+---------------------------
 
 The output of the popparsing command is a JSON file
 containing a list of dictionaries (one per equilibrium data set)
@@ -166,7 +310,7 @@ as values of each phase name.
 +----------+-----------------------------+
 
 Example
--------
+=======
 
 The following input file will generate the following output file.
 

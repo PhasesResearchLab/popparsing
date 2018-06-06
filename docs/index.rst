@@ -289,14 +289,19 @@ with each dictionary containing the following keys and values.
 |values    |A list of data (either a   |
 |          |single number or a list)   |
 +----------+---------------------------+
+|reference |The argument from the      |
+|          |``LABEL`` command          |
++----------+---------------------------+
 
-Phase Sub-dictionary
-^^^^^^^^^^^^^^^^^^^^
+Phases Sub-dictionary
+---------------------
 
-The phases dictionary contains phase names
+The phases dictionary contains phase names as keys
 and a sub-dictionary of statuses and/or values
-as values of each phase name.
+as values.
 
++----------------------------------------+
+|Dictionary for each phase               |
 +----------+-----------------------------+
 |Key       |Value                        |
 +==========+=============================+
@@ -308,6 +313,50 @@ as values of each phase name.
 |          |for the phase (only if status|
 |          |is ``FIXED`` or ``ENTERED``) |
 +----------+-----------------------------+
+
+Conditions Sub-dictionary
+-------------------------
+
+The dictionary that the 'conditions' key refers
+to will contain condition names as keys, and each value
+will either be a floating point number or a list of
+floating point numbers.  In addition to the condition names,
+the 'conditions' dictionary will always contain a 'reference_states'
+key which stores another dictionary.  The 'reference_states'
+dictionary will have component names as keys and phase names as values.
+If the ``SET_REFERENCE_STATE`` command is not used for the equilibrium
+set, then the dictionary will be empty.
+
+Components List
+---------------
+
+The 'components' list consist of string elements of all
+components found in the POP commands for the created equilibrium set.
+The pop file parser finds these elements in the first arguments of 
+``SET_REFERENCE_STATE`` commands and property names such as X(NI) and X(LIQ,NI)
+in the ``SET_CONDITION`` and ``EXPERIMENT`` commands.
+
+Outputs and Values Lists
+------------------------
+
+The 'outputs' and 'values' keys refer
+to two lists of the same size.  Each n-th element
+in the output list corresponds to the n-th element
+of the values list.  The outputs list will simply
+contains string type elements that represent the name
+of the measured outputs.  Each element in the values 
+list will be one of three data types: 
+floating point number, dictionary, or list. 
+
+Floating point values are used for equalities while dictionaries are used
+for inequalities entered.  Specifically, if the element is 
+a dictionary, it will have two keys: 'equality' and 'value'.
+The 'equality' key will determine whether the inequality is '<'
+or '>' while the 'value' key will store the numerical value.
+Finally, lists are used for variables that correspond to a list
+of numerical values in a specific column of a table created by
+the ``TABLE_VALUES`` and ``TABLE_END`` commands.
+
 
 Example
 =======

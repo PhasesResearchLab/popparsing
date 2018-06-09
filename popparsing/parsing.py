@@ -96,7 +96,7 @@ def _pop_grammar():
         'DORMANT') | POPCommand('SUSPENDED')
     cmd_change_status = POPCommand('CHANGE_STATUS') + POPCommand('PHASE') + phases + Suppress(
         '=') + Group(phase_statuses)
-    enter_const = POPCommand('CONSTANT') + Group(OneOrMore(const))
+    enter_const = POPCommand('CONSTANT') + Group(OneOrMore(const + Optional(sCOMMA)))
     enter_func_var = (POPCommand('FUNCTION') | POPCommand('VARIABLE')) + Group(symbol_name + '=' + expr)
     enter_table = POPCommand('TABLE')  # TODO: implement
     cmd_en_symbol = POPCommand('ENTER_SYMBOL') + (enter_const | enter_func_var | enter_table)
@@ -112,7 +112,7 @@ def _pop_grammar():
     cmd_alternate = POPCommand('SET_ALTERNATE_CONDITION') + OneOrMore(
         Group((property | const) + sERROR) + Optional(sCOMMA))
     cmd_experiment_phase = POPCommand('EXPERIMENT') + OneOrMore(
-        Group((property | const) + sERROR) + Optional(sCOMMA))
+        (property | const) + sERROR + Optional(sCOMMA))
     cmd_start_value = POPCommand('SET_START_VALUE') + OneOrMore(
         (arith_cond | property | const) + Optional(sERROR) + Optional(sCOMMA))
     cmd_save = POPCommand('SAVE_WORKSPACES')
@@ -272,7 +272,7 @@ def _process_symbols(exp, symbol_type, symbols):
     return exp
 
 
-def _process_experiment(exp, experiments):
+def _process_experiment(exp, *experiments):
     exp_experiments = exp.get('experiments', [])
     for experiment in experiments:
         d = {}
@@ -389,7 +389,7 @@ def get_points_lst(instring):
     for command in commands:
         tokens = None
         try:
-            if "ENTER_SYMBOL" in command or "EXTERNAL" in command or "CHANGE_STATUS COMPONENT" in command:
+            if "EXTERNAL" in command or "CHANGE_STATUS COMPONENT" in command:
                 continue
             tokens = _pop_grammar().parseString(command)
             new_experiment_set = _POP_PROCESSOR[tokens[0]](current_experiment_set, *tokens[1:])

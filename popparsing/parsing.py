@@ -298,8 +298,21 @@ def _process_condition(exp, *conditions):
     for cond in conditions:
         d = {}
         d["property"] = cond[0]
-
-        if isinstance(cond[1], ParseResults):
+        #TODO: Implement better solution to handling complex conditions.
+        if len(cond) > 4:
+            property = cond[:-2]
+            elements = set()
+            for element in property:
+                if type(element)==ParseResults:
+                    unpacked = unpack_parse_results(element)
+                    elements.add(unpacked[-1])
+            property = ['(' + ','.join(unpack_parse_results(x)) + ')' if type(x)==ParseResults
+                        else x for x in property]
+            d['property'] = ''.join(property)
+            d['element'] = elements
+            d['equality'] = cond[-2]
+            d['symbol_repr'] = construct_symbol(cond[-1:])
+        elif isinstance(cond[1], ParseResults):
             # assume the format prop(phase) (=/>/<) symbol is followed
             d["element"] = cond[1]
             d["equality"] = cond[2]

@@ -618,7 +618,8 @@ POP_CONDITION_EXPRESSIONS_RESULTS=[
         'conditions' : {
             'P' : 101325,
             'T' : 298.15,
-            '3*X(MG)' : 1
+            '3*X(MG)' : 1,
+            'reference_states' : {}
         },
         'outputs' : ['H'],
         'values' : [-59000],
@@ -635,7 +636,8 @@ POP_CONDITION_EXPRESSIONS_RESULTS=[
         'conditions' : {
             'P' : 101325,
             'T' : 298.15,
-            '3*X(MG)' : 2
+            '3*X(MG)' : 2,
+            'reference_states' : {}
         },
         'outputs' : ['H'],
         'values' : [-40000],
@@ -652,7 +654,8 @@ POP_CONDITION_EXPRESSIONS_RESULTS=[
         'conditions' : {
             'T' : list(range(335, 705, 10)),
             'P' : 101325,
-            '3*X(MG)' : 2
+            '3*X(MG)' : 2,
+            'reference_states' : {}
         },
         'outputs' : ['CPM2N'],
         'values' : [[ 70.68, 71.25, 71.64, 71.94, 72.81,
@@ -661,8 +664,8 @@ POP_CONDITION_EXPRESSIONS_RESULTS=[
                       75.93, 76.26, 76.23, 76.74, 76.86,
                       76.80, 76.83, 77.19, 77.43, 77.49,
                       77.79, 78.09, 78.21, 78.57, 78.63,
-                      78.45, 79.08, 78.99, 79.20, 79.56,
-                      79.62 ]],
+                      78.45, 79.08, 78.99, 78.99, 79.20, 
+                      79.56, 79.62 ]],
         'reference' : 'AM2C'
     },
 ]
@@ -681,7 +684,8 @@ POP_COMPLEX_CONDITIONS_RESULTS=[{
     'components' : ['MG'],
     'conditions' : {
         'P' : 101325,
-        'X(LIQ,MG)-X(MGNI2,MG)' : 0
+        'X(LIQ,MG)-X(MGNI2,MG)' : 0,
+        'reference_states' : {}
     },
     'outputs' : ['T'],
     'values' : [1420],

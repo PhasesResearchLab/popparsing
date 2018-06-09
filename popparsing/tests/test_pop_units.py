@@ -130,14 +130,12 @@ def test_data_from_parrot_can_be_parsed():
     assert match_sets(result, POP_FROM_PARROT_RESULTS)
 
 
-@pytest.mark.xfail
 def test_complex_conditions_can_be_parsed():
     """Conditions where constitutions are subtracted can be parsed"""
     result = convert_pop_data(POP_COMPLEX_CONDITIONS)
     assert match_sets(result, POP_COMPLEX_CONDITIONS_RESULTS)
 
 
-@pytest.mark.xfail
 def test_expressions_as_conditions_can_be_parsed():
     """Conditions where constitutions are subtracted can be parsed"""
     result = convert_pop_data(POP_CONDITION_EXPRESSIONS)

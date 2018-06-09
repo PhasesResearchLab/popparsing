@@ -23,8 +23,14 @@ def find_components(data):
         conditions = data['conditions']
         for sub_data in conditions:
             if 'element' in sub_data:
-                info = unpack_parse_results(sub_data['element'])
-                components.add(info[-1])
+                sub_sub_data = sub_data['element']
+                #TODO: Come up with better way to parse conditions for components
+                if type(sub_sub_data)==set:
+                    for s in sub_sub_data:
+                        components.add(s)
+                else:
+                    info = unpack_parse_results(sub_sub_data)
+                    components.add(info[-1])
     if 'experiments' in data:
         phases = data['phases'].keys()
         experiments = data['experiments']
@@ -79,11 +85,12 @@ def find_conditions(data, symbols):
         name = condition['property']
         if 'element' in condition:
             lst = condition['element']
-            component = lst[-1]
-            phase = None
-            if len(lst) > 1:
-                phase = lst[-2]
-            name = condition_str(name, phase, component)
+            if type(lst)!=set:
+                component = lst[-1]
+                phase = None
+                if len(lst) > 1:
+                    phase = lst[-2]
+                name = condition_str(name, phase, component)
         value = condition['symbol_repr']
         value_str = str(value)
         if value_str[:3]=='col':

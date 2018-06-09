@@ -261,6 +261,10 @@ Main Equilibrium Dictionary
 The output of the popparsing command is a JSON file
 containing a list of dictionaries (one per equilibrium data set)
 with each dictionary containing the following keys and values.
+Each dictionary is created by a ``CREATE_NEW_EQUILIBRIUM`` command,
+and the command lines between that particular line and either the next line
+calling the ``CREATE_NEW_EQUILIBRIUM`` command or the end of the file determines
+the contents of that dictionary.
 
 +----------+---------------------------+
 |Key       |Value                      |
@@ -293,6 +297,37 @@ with each dictionary containing the following keys and values.
 |          |``LABEL`` command          |
 +----------+---------------------------+
 
+Example:
+
+Input:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM @@,1
+    CHANGE_STATUS PHASE LIQUID=DORMANT
+    CREATE_NEW_EQUILIBRIUM @@,1
+    
+    
+Output:
+
+.. code-block:: python
+
+    [
+        #First C-N command creates a dictionary.
+        #CHANGE_STATUS PHASE command inserts a 'phases' key 
+        #in the first dictionary.
+        {
+            'phases' : {
+                'LIQUID' : {
+                    'status' : 'DORMANT'
+                }
+            }
+        },
+        #Second C-N command creates an empty dictionary.
+        {
+        }
+    ]
+
 Phases Sub-dictionary
 ---------------------
 
@@ -314,18 +349,77 @@ as values.
 |          |is ``FIXED`` or ``ENTERED``) |
 +----------+-----------------------------+
 
+Example:
+
+Input:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM @@,1
+    CHANGE_STATUS PHASE LIQUID=DORMANT
+    CHANGE_STATUS PHASE SPINEL=FIXED 1
+    
+    
+Output:
+
+.. code-block:: python
+
+    [
+        {
+            'phases' : {
+                'LIQUID' : {
+                    'status' : 'DORMANT'
+                }
+                'SPINEL' : {
+                    'status' : 'FIXED',
+                    'value' : 1.0
+                }
+            }
+        }
+    ]
+
 Conditions Sub-dictionary
 -------------------------
 
-The dictionary that the 'conditions' key refers
-to will contain condition names as keys, and each value
+The content of the dictionary that the 'conditions' key refers
+to depends on the arguments of one or more ``SET_CONDITION`` commands. 
+It will contain condition names as keys, and each value
 will either be a floating point number or a list of
 floating point numbers.  In addition to the condition names,
 the 'conditions' dictionary will always contain a 'reference_states'
-key which stores another dictionary.  The 'reference_states'
-dictionary will have component names as keys and phase names as values.
+key which stores another dictionary.  The contents of the 'reference_states'
+dictionary is determined by the arguments of each ``SET_REFERENCE_STATE`` command.  
+It will have component names as keys and phase names as values.
 If the ``SET_REFERENCE_STATE`` command is not used for the equilibrium
 set, then the dictionary will be empty.
+
+Example:
+
+Input:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM @@,1
+    SET_CONDITION T=@1 P=10000
+    TABLE_VALUES
+    100
+    200
+    300
+    TABLE_END
+    
+    
+Output:
+
+.. code-block:: python
+
+    [
+        {
+            'conditions' : {
+                'T' : [ 100.0, 200.0, 300.0 ],
+                'P' : 100000
+            }
+        }
+    ]
 
 Components List
 ---------------
@@ -336,11 +430,28 @@ The pop file parser finds these elements in the first arguments of
 ``SET_REFERENCE_STATE`` commands and property names such as X(NI) and X(LIQ,NI)
 in the ``SET_CONDITION`` and ``EXPERIMENT`` commands.
 
+Example: The following input would yield ``['MG', 'NI']`` as a list of components
+because of ``X(NI)`` and ``ACR(MG)``.
+
+Input:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM @@,1
+    SET_CONDITION X(NI)=0.1
+    EXPERIMENT ACR(MG)=@1:5
+    TABLE_VALUES
+    0.1
+    0.2
+    0.3
+    TABLE_END
+
 Outputs and Values Lists
 ------------------------
 
 The 'outputs' and 'values' keys refer
-to two lists of the same size.  Each n-th element
+to two lists of the same size and are created by 
+parsing the arguments of ``EXPERIMENT`` commands. Each n-th element
 in the output list corresponds to the n-th element
 of the values list.  The outputs list will simply
 contains string type elements that represent the name
@@ -357,9 +468,45 @@ Finally, lists are used for variables that correspond to a list
 of numerical values in a specific column of a table created by
 the ``TABLE_VALUES`` and ``TABLE_END`` commands.
 
+Example:
 
-Example
-=======
+Input:
+
+.. code-block:: yaml
+
+    CREATE_NEW_EQUILIBRIUM @@,1
+    EXPERIMENT X(LIQUID,Ti)=@1:0.01
+    EXPERIMENT LPFCC=4.02:5% DGMR(DEL)<0:0.001
+    TABLE_VALUES
+    0.01
+    0.02
+    0.03
+    TABLE_END
+    
+Output:
+
+.. code-block:: python
+
+    [
+        {
+            'outputs' : [
+                'X(LIQUID,Ti)', 
+                'LPFCC', 
+                'DGMR(DEL)'
+            ]
+            'values' : [
+                [0.01, 0.02, 0.03], 
+                4.02, 
+                {
+                    'equality' : '<', 
+                    'value' : 0.0
+                }
+            ]
+        }
+    ]
+
+Full Example
+============
 
 The following input file will generate the following output file.
 
@@ -437,7 +584,7 @@ Output:
         }
     ]
    
-For a full example, see the :doc:`MgNi POP File Example <mgni>`.
+For another example, see the :doc:`MgNi POP File Example <mgni>`.
 
 
 .. toctree::

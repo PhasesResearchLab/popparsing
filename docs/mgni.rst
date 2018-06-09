@@ -11,6 +11,7 @@ Input: MgNi.POP
     @@ THERMOCHEMICAL DATA IN LIQUID
     @@ 100-300
 
+    @@ Data Set 1
     TABLE 100
     C-N @@,1
     CH P LIQ=F 1
@@ -48,6 +49,7 @@ Input: MgNi.POP
      0.34380        0.506
     TABLE_END
 
+    @@ Data Set 2
     EN-SYM FUN HMRT=HMR/1000;
     TABLE 200
     C-N @@,1
@@ -73,6 +75,7 @@ Input: MgNi.POP
      0.15700       -7.940
     TABLE_END
 
+    @@ Data Set 3
     ent fun ph1=(hmr+hmr.x(ni)-x(ni)*hmr.x(ni))/1000;
     TABLE 300
     C-N @@,1
@@ -103,6 +106,7 @@ Input: MgNi.POP
     @@ REFERENCE
     @@ 1000-
 
+    @@ Data Set 4
     TABLE 1000
     C-N @@,1
     CH P LIQ HCP_A3=F 1
@@ -119,7 +123,7 @@ Input: MgNi.POP
     781.0 .1129
     TABLE_END
 
-
+    @@ Data Set 5
     TABLE 1100
     C-N @@,1
     CH P LIQ FCC=F 1
@@ -135,7 +139,7 @@ Input: MgNi.POP
     TABLE_END
 
 
-
+    @@ Data Set 6
     @@NOW DEAL WITH THE EUTECTIC POINT ON THE NI RICH END
     C-N 2,1
     CH P LIQ,MGNI2,FCC=F 1
@@ -146,7 +150,7 @@ Input: MgNi.POP
 
 
 
-
+    @@ Data Set 7
     @@THIS THEN DEALS WITH THE TWO PHASE EQUILIBRIA IN L+MGNI2
     TABLE 2000
     C-N @@,1
@@ -168,7 +172,7 @@ Input: MgNi.POP
     1370 .7349
     TABLE_END
 
-
+    @@ Data Set 8
     @@ THIS DEALS WITH THE PERITECTIC MG2NI REACTION
     C-N 10,1
     CH P LIQ,MGNI2,MG2NI=F 1
@@ -177,7 +181,7 @@ Input: MgNi.POP
     EXPERIMENT X(LIQ,NI)=0.29:5%
     LABEL APER
 
-
+    @@ Data Set 9
     @@THIS THEN TAKES CARE OF THE EUTECTIC ON THE MG RICH END
     C-N 11,1
     CH P LIQ,HCP_A3,MG2NI=F 1
@@ -186,6 +190,7 @@ Input: MgNi.POP
     EXPERIMENT X(LIQ,NI)=0.113:5%
     LABEL AEMG
 
+    @@ Data Set 10
     @@THE FOLLOWING TABLE TAKES CARE OF THE LIQUID MG2NI TWO PHASE
     @@EQUILIBIA
     TABLE 3000
@@ -204,7 +209,7 @@ Input: MgNi.POP
     1023.2 .2662
     TABLE_END
 
-
+    @@ Data Set 11
     @@ STABILITY EQUILIBRIA RESTRICTIONS
     TABLE 4000
     C-N @@,1
@@ -228,6 +233,7 @@ Input: MgNi.POP
     200
     TABLE_END
 
+    @@ Data Set 12
     TABLE 5000
     C-N @@,1
     CH P HCP_A3 MG2NI=F 1
@@ -244,6 +250,7 @@ Input: MgNi.POP
     200
     TABLE_END
 
+    @@ Data Set 13
     E-SY FUNCTION GLDD=MU(NI).X(NI);
     TABLE 6000
     C-N @@,1
@@ -271,6 +278,7 @@ Output
 .. code-block:: python
 
     [
+        # Data set 1
         {
             'phases' : {
                 'LIQ' : {
@@ -311,6 +319,7 @@ Output
             ]],
             'reference' : 'ALA1'
         },
+        # Data set 2
         {
             'phases' : {
                 'LIQ' : {
@@ -344,6 +353,7 @@ Output
             ]],
             'reference' : 'ALA2'
         },
+        # Data set 3
         {
             'phases' : {
                 'LIQ' : {
@@ -377,6 +387,7 @@ Output
             ]],
             'reference' : 'ALA3'
         },
+        # Data set 4
         {
             'phases' : {
                 'LIQ' : {
@@ -400,6 +411,7 @@ Output
                         { 'equality' : '<', 'value' : 0.01 }],
             'reference' : 'ALHC'
         },
+        # Data set 5
         {
             'phases' : {
                 'LIQ' : {
@@ -423,6 +435,7 @@ Output
                         { 'equality' : '>', 'value' : 0.98 }],
             'reference' : 'ALFC'
         },
+        # Data set 6
         {
             'phases' : {
                 'LIQ' : {
@@ -448,6 +461,7 @@ Output
             'values' : [ 1370, 0.803 ],
             'reference' : 'AIEU'
         },
+        # Data set 7
         {
             'phases' : {
                 'LIQ' : {
@@ -473,6 +487,7 @@ Output
                           1412, 1418, 1417, 1418, 1413, 1370 ]],
             'reference' : 'ALM2'
         },
+        # Data set 8
         {
             'phases' : {
                 'LIQ' : {
@@ -498,6 +513,7 @@ Output
             'values' : [ 1033, 0.29 ],
             'reference' : 'APER'
         },
+        # Data set 9
         {
             'phases' : {
                 'LIQ' : {
@@ -523,6 +539,7 @@ Output
             'values' : [ 779, 0.113 ],
             'reference' : 'AEMG'
         },
+        # Data set 10
         {
             'phases' : {
                 'LIQ' : {
@@ -548,6 +565,7 @@ Output
                           994.5, 1012.7, 1023.2 ]],
             'reference' : 'AM2N'
         },
+        # Data set 11
         {
             'phases' : {
                 'FCC' : {
@@ -573,6 +591,7 @@ Output
             'values' : [ { 'equality' : '<', 'value' : 0 } ],
             'reference' : 'AST1'
         },
+        # Data set 12
         {
             'phases' : {
                 'HCP_A3' : {
@@ -598,6 +617,7 @@ Output
             'values' : [{ 'equality' : '<', 'value' : 0 }],
             'reference' : 'AST2'
         },
+        # Data set 13
         {
             'phases' : {
                 'LIQ' : {
